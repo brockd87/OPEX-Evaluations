@@ -1,1566 +1,772 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="referrer" content="no-referrer">
-    <title>Chick-fil-A Back of House Team Member Evaluation</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <style>
-        .rating-container {
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
-        }
-        .rating-btn {
-            width: 2.5rem;
-            height: 2.5rem;
-            border: 2px solid #dc2626;
-            background: white;
-            color: #dc2626;
-            border-radius: 0.375rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .rating-btn:hover {
-            background: #fef2f2;
-        }
-        .rating-btn.selected {
-            background: #dc2626;
-            color: white;
-        }
-        .section-score {
-            font-size: 1.25rem;
-            font-weight: bold;
-            color: #dc2626;
-        }
-        .overall-score {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #dc2626;
-        }
-        @media print {
-            .no-print { display: none !important; }
-            .print-only { display: block !important; }
-        }
-        .print-only { display: none; }
-        .signature-line {
-            border-bottom: 2px solid #000;
-            min-height: 40px;
-            margin-bottom: 5px;
-        }
-    </style>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chick-fil-A Back of House Team Member Evaluation</title>
+
+  <!-- UI libs -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <!-- Signature fonts -->
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600&family=Great+Vibes&family=Pacifico&family=Handlee&display=swap"/>
+
+  <style>
+    .rating-container{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
+    .rating-btn,.na-btn{
+      width:2.5rem;height:2.5rem;border:2px solid #dc2626;background:#fff;color:#dc2626;
+      border-radius:.375rem;font-weight:700;cursor:pointer;transition:.2s;
+    }
+    .rating-btn:hover{background:#fef2f2}
+    .rating-btn.selected{background:#dc2626;color:#fff}
+    .na-btn{border-color:#9CA3AF;color:#4B5563}
+    .na-btn:hover{background:#F3F4F6}
+    .na-btn.selected{background:#4B5563;color:#fff}
+    .section-score{font-size:1.25rem;font-weight:700;color:#dc2626}
+    .overall-score{font-size:2rem;font-weight:700;color:#dc2626}
+    .signature-preview{border-bottom:2px solid #000;min-height:48px;display:flex;align-items:center;padding:6px 8px;background:#fff}
+    .sig-ink{color:#111;font-size:28px;line-height:1;white-space:nowrap}
+    .font-dancing{font-family:"Dancing Script",cursive}
+    .font-pacifico{font-family:"Pacifico",cursive}
+    .font-handlee{font-family:"Handlee",cursive}
+    .font-greatvibes{font-family:"Great Vibes",cursive}
+    @media print{.no-print{display:none!important}}
+  </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
-    <div class="container mx-auto px-4 py-8 max-w-4xl">
-        <!-- Header -->
-        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
-            <div class="flex items-center justify-between mb-4">
-                <div class="flex items-center space-x-4">
-                    <img src="https://static-us-img.skywork.ai/prod/analysis/2025-06-05/5150951867936642428/1930689392923713536_7c5e669c3e9abbf3cf02952d48716ab6.jpg" alt="Chick-fil-A Logo" class="h-12 w-12">
-                    <div>
-                        <h1 class="text-2xl font-bold text-red-600">Chick-fil-A</h1>
-                        <p class="text-gray-600">Back of House Team Member Evaluation</p>
-                    </div>
-                </div>
-                <img src="https://static-us-img.skywork.ai/prod/analysis/2025-06-05/5150951867936642428/1930689392923713538_cb647f5b95dea429000f87d43548b2bb.png" alt="Winning Hearts" class="h-16 w-16">
-            </div>
+  <div class="container mx-auto px-4 py-8 max-w-5xl">
+    <!-- Header -->
+    <div class="bg-white rounded-lg shadow p-6 mb-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-2xl font-bold text-red-600">Chick-fil-A</h1>
+          <p class="text-gray-600">Back of House Team Member Evaluation</p>
         </div>
-
-        <!-- Team Member Information -->
-        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
-            <h2 class="text-xl font-bold text-gray-800 mb-4">Team Member Information</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Team Member Name</label>
-                    <input type="text" id="teamMemberName" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Position</label>
-                    <select id="position" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
-                        <option value="">Select Position</option>
-                        <option value="Leader">Leader</option>
-                        <option value="Team Member">Team Member</option>
-                        <option value="Prep">Prep</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Location</label>
-                    <select id="location" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
-                        <option value="">Select Location</option>
-                        <option value="Ashley Crossing">Ashley Crossing</option>
-                        <option value="Bees Ferry">Bees Ferry</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Hire Date</label>
-                    <input type="date" id="hireDate" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Evaluation Date</label>
-                    <input type="date" id="evaluationDate" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Evaluator Name</label>
-                    <input type="text" id="evaluatorName" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
-                </div>
-            </div>
-        </div>
-
-        <!-- Performance Chart -->
-        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
-            <h2 class="text-xl font-bold text-gray-800 mb-4">Performance Overview</h2>
-            <div class="flex justify-center items-center">
-                <div class="w-full max-w-md">
-                    <canvas id="performanceChart" width="400" height="400"></canvas>
-                </div>
-                <div class="ml-8">
-                    <div class="text-center">
-                        <p class="text-lg font-medium text-gray-700">Overall Score</p>
-                        <p id="overallScore" class="overall-score">0.0</p>
-                        <p class="text-sm text-gray-500">out of 5.0</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Evaluation Sections -->
-        <div class="space-y-6">
-            <!-- Breading/Machines Section -->
-            <div class="bg-white rounded-lg shadow-lg p-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-bold text-gray-800">Breading/Machines</h2>
-                    <span id="breadingScore" class="section-score">0.0</span>
-                </div>
-                <div class="space-y-4">
-                    <div class="evaluation-item" data-section="breading">
-                        <p class="font-medium text-gray-700 mb-2">Uniform Equipment: Uniform, name-tag, neat and clean, gloves, hair net, and yellow apron/gloves while in raw area</p>
-                        <div class="rating-container">
-                            <span class="text-sm text-gray-600 mr-2">Rating:</span>
-                            <button class="rating-btn" data-rating="1">1</button>
-                            <button class="rating-btn" data-rating="2">2</button>
-                            <button class="rating-btn" data-rating="3">3</button>
-                            <button class="rating-btn" data-rating="4">4</button>
-                            <button class="rating-btn" data-rating="5">5</button>
-                        </div>
-                    </div>
-                    <div class="evaluation-item" data-section="breading">
-                        <p class="font-medium text-gray-700 mb-2">Following Food Safety: Team member does not cross over while handling raw, dressed in yellow</p>
-                        <div class="rating-container">
-                            <span class="text-sm text-gray-600 mr-2">Rating:</span>
-                            <button class="rating-btn" data-rating="1">1</button>
-                            <button class="rating-btn" data-rating="2">2</button>
-                            <button class="rating-btn" data-rating="3">3</button>
-                            <button class="rating-btn" data-rating="4">4</button>
-                            <button class="rating-btn" data-rating="5">5</button>
-                        </div>
-                    </div>
-                    <div class="evaluation-item" data-section="breading">
-                        <p class="font-medium text-gray-700 mb-2">Pathway Standards: Team member loads the grill properly</p>
-                        <div class="rating-container">
-                            <span class="text-sm text-gray-600 mr-2">Rating:</span>
-                            <button class="rating-btn" data-rating="1">1</button>
-                            <button class="rating-btn" data-rating="2">2</button>
-                            <button class="rating-btn" data-rating="3">3</button>
-                            <button class="rating-btn" data-rating="4">4</button>
-                            <button class="rating-btn" data-rating="5">5</button>
-                        </div>
-                    </div>
-                    <div class="evaluation-item" data-section="breading">
-                        <p class="font-medium text-gray-700 mb-2">Breader pulling from the right row? Are use first present and being used?</p>
-                        <div class="rating-container">
-                            <span class="text-sm text-gray-600 mr-2">Rating:</span>
-                            <button class="rating-btn" data-rating="1">1</button>
-                            <button class="rating-btn" data-rating="2">2</button>
-                            <button class="rating-btn" data-rating="3">3</button>
-                            <button class="rating-btn" data-rating="4">4</button>
-                            <button class="rating-btn" data-rating="5">5</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="mt-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Section Comments</label>
-                    <textarea id="breadingComments" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Additional comments for this section..."></textarea>
-                </div>
-            </div>
-
-            <!-- Primary Section -->
-            <div class="bg-white rounded-lg shadow-lg p-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-bold text-gray-800">Primary</h2>
-                    <span id="primaryScore" class="section-score">0.0</span>
-                </div>
-                <div class="space-y-4">
-                    <div class="evaluation-item" data-section="primary">
-                        <p class="font-medium text-gray-700 mb-2">Uniform Equipment: Uniform, name-tag, neat and clean, gloves, and hair net</p>
-                        <div class="rating-container">
-                            <span class="text-sm text-gray-600 mr-2">Rating:</span>
-                            <button class="rating-btn" data-rating="1">1</button>
-                            <button class="rating-btn" data-rating="2">2</button>
-                            <button class="rating-btn" data-rating="3">3</button>
-                            <button class="rating-btn" data-rating="4">4</button>
-                            <button class="rating-btn" data-rating="5">5</button>
-                        </div>
-                    </div>
-                    <div class="evaluation-item" data-section="primary">
-                        <p class="font-medium text-gray-700 mb-2">Pathway Standards: Building sandwich correctly (two pickles spread apart under the filet)</p>
-                        <div class="rating-container">
-                            <span class="text-sm text-gray-600 mr-2">Rating:</span>
-                            <button class="rating-btn" data-rating="1">1</button>
-                            <button class="rating-btn" data-rating="2">2</button>
-                            <button class="rating-btn" data-rating="3">3</button>
-                            <button class="rating-btn" data-rating="4">4</button>
-                            <button class="rating-btn" data-rating="5">5</button>
-                        </div>
-                    </div>
-                    <div class="evaluation-item" data-section="primary">
-                        <p class="font-medium text-gray-700 mb-2">Quick Delivery: Can build sandwich/special order correctly up to standards in timely manner</p>
-                        <div class="rating-container">
-                            <span class="text-sm text-gray-600 mr-2">Rating:</span>
-                            <button class="rating-btn" data-rating="1">1</button>
-                            <button class="rating-btn" data-rating="2">2</button>
-                            <button class="rating-btn" data-rating="3">3</button>
-                            <button class="rating-btn" data-rating="4">4</button>
-                            <button class="rating-btn" data-rating="5">5</button>
-                        </div>
-                    </div>
-                    <div class="evaluation-item" data-section="primary">
-                        <p class="font-medium text-gray-700 mb-2">Pathway Standards: Sandwiches in correct sleeve/box (deluxe in clam shell, others in sleeves)</p>
-                        <div class="rating-container">
-                            <span class="text-sm text-gray-600 mr-2">Rating:</span>
-                            <button class="rating-btn" data-rating="1">1</button>
-                            <button class="rating-btn" data-rating="2">2</button>
-                            <button class="rating-btn" data-rating="3">3</button>
-                            <button class="rating-btn" data-rating="4">4</button>
-                            <button class="rating-btn" data-rating="5">5</button>
-                        </div>
-                    </div>
-                    <div class="evaluation-item" data-section="primary">
-                        <p class="font-medium text-gray-700 mb-2">AHA is being followed and items are being scanned in and out</p>
-                        <div class="rating-container">
-                            <span class="text-sm text-gray-600 mr-2">Rating:</span>
-                            <button class="rating-btn" data-rating="1">1</button>
-                            <button class="rating-btn" data-rating="2">2</button>
-                            <button class="rating-btn" data-rating="3">3</button>
-                            <button class="rating-btn" data-rating="4">4</button>
-                            <button class="rating-btn" data-rating="5">5</button>
-                        </div>
-                    </div>
-                    <div class="evaluation-item" data-section="primary">
-                        <p class="font-medium text-gray-700 mb-2">Correct number of items in chutes, not over producing</p>
-                        <div class="rating-container">
-                            <span class="text-sm text-gray-600 mr-2">Rating:</span>
-                            <button class="rating-btn" data-rating="1">1</button>
-                            <button class="rating-btn" data-rating="2">2</button>
-                            <button class="rating-btn" data-rating="3">3</button>
-                            <button class="rating-btn" data-rating="4">4</button>
-                            <button class="rating-btn" data-rating="5">5</button>
-                        </div>
-                    </div>
-                    <div class="evaluation-item" data-section="primary">
-                        <p class="font-medium text-gray-700 mb-2">Filets used at right temp? Can temp products and know correct temp?</p>
-                        <div class="rating-container">
-                            <span class="text-sm text-gray-600 mr-2">Rating:</span>
-                            <button class="rating-btn" data-rating="1">1</button>
-                            <button class="rating-btn" data-rating="2">2</button>
-                            <button class="rating-btn" data-rating="3">3</button>
-                            <button class="rating-btn" data-rating="4">4</button>
-                            <button class="rating-btn" data-rating="5">5</button>
-                        </div>
-                    </div>
-                    <div class="evaluation-item" data-section="primary">
-                        <p class="font-medium text-gray-700 mb-2">Team member observed keeping a clean station</p>
-                        <div class="rating-container">
-                            <span class="text-sm text-gray-600 mr-2">Rating:</span>
-                            <button class="rating-btn" data-rating="1">1</button>
-                            <button class="rating-btn" data-rating="2">2</button>
-                            <button class="rating-btn" data-rating="3">3</button>
-                            <button class="rating-btn" data-rating="4">4</button>
-                            <button class="rating-btn" data-rating="5">5</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="mt-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Section Comments</label>
-                    <textarea id="primaryComments" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Additional comments for this section..."></textarea>
-                </div>
-            </div>
-
-            <!-- Secondary Section -->
-            <div class="bg-white rounded-lg shadow-lg p-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-bold text-gray-800">Secondary</h2>
-                    <span id="secondaryScore" class="section-score">0.0</span>
-                </div>
-                <div class="space-y-4">
-                    <div class="evaluation-item" data-section="secondary">
-                        <p class="font-medium text-gray-700 mb-2">Uniform Equipment: Uniform, name-tag, neat and clean, gloves, and hair net</p>
-                        <div class="rating-container">
-                            <span class="text-sm text-gray-600 mr-2">Rating:</span>
-                            <button class="rating-btn" data-rating="1">1</button>
-                            <button class="rating-btn" data-rating="2">2</button>
-                            <button class="rating-btn" data-rating="3">3</button>
-                            <button class="rating-btn" data-rating="4">4</button>
-                            <button class="rating-btn" data-rating="5">5</button>
-                        </div>
-                    </div>
-                    <div class="evaluation-item" data-section="secondary">
-                        <p class="font-medium text-gray-700 mb-2">Quick Delivery: Can build sandwich/special order correctly up to standards in timely manner</p>
-                        <div class="rating-container">
-                            <span class="text-sm text-gray-600 mr-2">Rating:</span>
-                            <button class="rating-btn" data-rating="1">1</button>
-                            <button class="rating-btn" data-rating="2">2</button>
-                            <button class="rating-btn" data-rating="3">3</button>
-                            <button class="rating-btn" data-rating="4">4</button>
-                            <button class="rating-btn" data-rating="5">5</button>
-                        </div>
-                    </div>
-                    <div class="evaluation-item" data-section="secondary">
-                        <p class="font-medium text-gray-700 mb-2">Pathway Standards: Correct number of nuggets/strips in boxes with right tab pushed in</p>
-                        <div class="rating-container">
-                            <span class="text-sm text-gray-600 mr-2">Rating:</span>
-                            <button class="rating-btn" data-rating="1">1</button>
-                            <button class="rating-btn" data-rating="2">2</button>
-                            <button class="rating-btn" data-rating="3">3</button>
-                            <button class="rating-btn" data-rating="4">4</button>
-                            <button class="rating-btn" data-rating="5">5</button>
-                        </div>
-                    </div>
-                    <div class="evaluation-item" data-section="secondary">
-                        <p class="font-medium text-gray-700 mb-2">Pathway Standards: Grilled sandwich in wrapper inside shell</p>
-                        <div class="rating-container">
-                            <span class="text-sm text-gray-600 mr-2">Rating:</span>
-                            <button class="rating-btn" data-rating="1">1</button>
-                            <button class="rating-btn" data-rating="2">2</button>
-                            <button class="rating-btn" data-rating="3">3</button>
-                            <button class="rating-btn" data-rating="4">4</button>
-                            <button class="rating-btn" data-rating="5">5</button>
-                        </div>
-                    </div>
-                    <div class="evaluation-item" data-section="secondary">
-                        <p class="font-medium text-gray-700 mb-2">Pathway Standards: Right serving size scooped for macs and soups filled to the line</p>
-                        <div class="rating-container">
-                            <span class="text-sm text-gray-600 mr-2">Rating:</span>
-                            <button class="rating-btn" data-rating="1">1</button>
-                            <button class="rating-btn" data-rating="2">2</button>
-                            <button class="rating-btn" data-rating="3">3</button>
-                            <button class="rating-btn" data-rating="4">4</button>
-                            <button class="rating-btn" data-rating="5">5</button>
-                        </div>
-                    </div>
-                    <div class="evaluation-item" data-section="secondary">
-                        <p class="font-medium text-gray-700 mb-2">AHA is being followed and items are being scanned in and out</p>
-                        <div class="rating-container">
-                            <span class="text-sm text-gray-600 mr-2">Rating:</span>
-                            <button class="rating-btn" data-rating="1">1</button>
-                            <button class="rating-btn" data-rating="2">2</button>
-                            <button class="rating-btn" data-rating="3">3</button>
-                            <button class="rating-btn" data-rating="4">4</button>
-                            <button class="rating-btn" data-rating="5">5</button>
-                        </div>
-                    </div>
-                    <div class="evaluation-item" data-section="secondary">
-                        <p class="font-medium text-gray-700 mb-2">Correct number of items in chutes, not over producing</p>
-                        <div class="rating-container">
-                            <span class="text-sm text-gray-600 mr-2">Rating:</span>
-                            <button class="rating-btn" data-rating="1">1</button>
-                            <button class="rating-btn" data-rating="2">2</button>
-                            <button class="rating-btn" data-rating="3">3</button>
-                            <button class="rating-btn" data-rating="4">4</button>
-                            <button class="rating-btn" data-rating="5">5</button>
-                        </div>
-                    </div>
-                    <div class="evaluation-item" data-section="secondary">
-                        <p class="font-medium text-gray-700 mb-2">Can temp products correctly? Know the correct temps?</p>
-                        <div class="rating-container">
-                            <span class="text-sm text-gray-600 mr-2">Rating:</span>
-                            <button class="rating-btn" data-rating="1">1</button>
-                            <button class="rating-btn" data-rating="2">2</button>
-                            <button class="rating-btn" data-rating="3">3</button>
-                            <button class="rating-btn" data-rating="4">4</button>
-                            <button class="rating-btn" data-rating="5">5</button>
-                        </div>
-                    </div>
-                    <div class="evaluation-item" data-section="secondary">
-                        <p class="font-medium text-gray-700 mb-2">Pathway Standards: Utensils being used clean? Cleaned every two hours?</p>
-                        <div class="rating-container">
-                            <span class="text-sm text-gray-600 mr-2">Rating:</span>
-                            <button class="rating-btn" data-rating="1">1</button>
-                            <button class="rating-btn" data-rating="2">2</button>
-                            <button class="rating-btn" data-rating="3">3</button>
-                            <button class="rating-btn" data-rating="4">4</button>
-                            <button class="rating-btn" data-rating="5">5</button>
-                        </div>
-                    </div>
-                    <div class="evaluation-item" data-section="secondary">
-                        <p class="font-medium text-gray-700 mb-2">Team member observed keeping a clean station</p>
-                        <div class="rating-container">
-                            <span class="text-sm text-gray-600 mr-2">Rating:</span>
-                            <button class="rating-btn" data-rating="1">1</button>
-                            <button class="rating-btn" data-rating="2">2</button>
-                            <button class="rating-btn" data-rating="3">3</button>
-                            <button class="rating-btn" data-rating="4">4</button>
-                            <button class="rating-btn" data-rating="5">5</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="mt-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Section Comments</label>
-                    <textarea id="secondaryComments" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Additional comments for this section..."></textarea>
-                </div>
-            </div>
-
-            <!-- Hash/Fries Section -->
-            <div class="bg-white rounded-lg shadow-lg p-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-bold text-gray-800">Hash/Fries</h2>
-                    <span id="hashfriesScore" class="section-score">0.0</span>
-                </div>
-                <div class="space-y-4">
-                    <div class="evaluation-item" data-section="hashfries">
-                        <p class="font-medium text-gray-700 mb-2">Uniform Equipment: Uniform, name-tag, neat and clean, gloves, and hair net</p>
-                        <div class="rating-container">
-                            <span class="text-sm text-gray-600 mr-2">Rating:</span>
-                            <button class="rating-btn" data-rating="1">1</button>
-                            <button class="rating-btn" data-rating="2">2</button>
-                            <button class="rating-btn" data-rating="3">3</button>
-                            <button class="rating-btn" data-rating="4">4</button>
-                            <button class="rating-btn" data-rating="5">5</button>
-                        </div>
-                    </div>
-                    <div class="evaluation-item" data-section="hashfries">
-                        <p class="font-medium text-gray-700 mb-2">Pathway Standards: Timer is set for fries or hash being dropped</p>
-                        <div class="rating-container">
-                            <span class="text-sm text-gray-600 mr-2">Rating:</span>
-                            <button class="rating-btn" data-rating="1">1</button>
-                            <button class="rating-btn" data-rating="2">2</button>
-                            <button class="rating-btn" data-rating="3">3</button>
-                            <button class="rating-btn" data-rating="4">4</button>
-                            <button class="rating-btn" data-rating="5">5</button>
-                        </div>
-                    </div>
-                    <div class="evaluation-item" data-section="hashfries">
-                        <p class="font-medium text-gray-700 mb-2">Pathway Standards: Timer used to discard fries/hash that have timed out</p>
-                        <div class="rating-container">
-                            <span class="text-sm text-gray-600 mr-2">Rating:</span>
-                            <button class="rating-btn" data-rating="1">1</button>
-                            <button class="rating-btn" data-rating="2">2</button>
-                            <button class="rating-btn" data-rating="3">3</button>
-                            <button class="rating-btn" data-rating="4">4</button>
-                            <button class="rating-btn" data-rating="5">5</button>
-                        </div>
-                    </div>
-                    <div class="evaluation-item" data-section="hashfries">
-                        <p class="font-medium text-gray-700 mb-2">Pathway Standards: Fries salted with correct number of clicks for the batch dropped</p>
-                        <div class="rating-container">
-                            <span class="text-sm text-gray-600 mr-2">Rating:</span>
-                            <button class="rating-btn" data-rating="1">1</button>
-                            <button class="rating-btn" data-rating="2">2</button>
-                            <button class="rating-btn" data-rating="3">3</button>
-                            <button class="rating-btn" data-rating="4">4</button>
-                            <button class="rating-btn" data-rating="5">5</button>
-                        </div>
-                    </div>
-                    <div class="evaluation-item" data-section="hashfries">
-                        <p class="font-medium text-gray-700 mb-2">Pathway Standards: Correct number of hash in each box</p>
-                        <div class="rating-container">
-                            <span class="text-sm text-gray-600 mr-2">Rating:</span>
-                            <button class="rating-btn" data-rating="1">1</button>
-                            <button class="rating-btn" data-rating="2">2</button>
-                            <button class="rating-btn" data-rating="3">3</button>
-                            <button class="rating-btn" data-rating="4">4</button>
-                            <button class="rating-btn" data-rating="5">5</button>
-                        </div>
-                    </div>
-                    <div class="evaluation-item" data-section="hashfries">
-                        <p class="font-medium text-gray-700 mb-2">Pathway Standards: Fries filled to the top of each container</p>
-                        <div class="rating-container">
-                            <span class="text-sm text-gray-600 mr-2">Rating:</span>
-                            <button class="rating-btn" data-rating="1">1</button>
-                            <button class="rating-btn" data-rating="2">2</button>
-                            <button class="rating-btn" data-rating="3">3</button>
-                            <button class="rating-btn" data-rating="4">4</button>
-                            <button class="rating-btn" data-rating="5">5</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="mt-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Section Comments</label>
-                    <textarea id="hashfriesComments" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Additional comments for this section..."></textarea>
-                </div>
-            </div>
-
-            <!-- Prep Area Section -->
-            <div class="bg-white rounded-lg shadow-lg p-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-bold text-gray-800">Prep Area</h2>
-                    <span id="prepareaScore" class="section-score">0.0</span>
-                </div>
-                <div class="space-y-4">
-                    <div class="evaluation-item" data-section="preparea">
-                        <p class="font-medium text-gray-700 mb-2">Can locate all bases for salads and identify what should be on them</p>
-                        <div class="rating-container">
-                            <span class="text-sm text-gray-600 mr-2">Rating:</span>
-                            <button class="rating-btn" data-rating="1">1</button>
-                            <button class="rating-btn" data-rating="2">2</button>
-                            <button class="rating-btn" data-rating="3">3</button>
-                            <button class="rating-btn" data-rating="4">4</button>
-                            <button class="rating-btn" data-rating="5">5</button>
-                        </div>
-                    </div>
-                    <div class="evaluation-item" data-section="preparea">
-                        <p class="font-medium text-gray-700 mb-2">Can tell when a sticker is expired and not use expired products</p>
-                        <div class="rating-container">
-                            <span class="text-sm text-gray-600 mr-2">Rating:</span>
-                            <button class="rating-btn" data-rating="1">1</button>
-                            <button class="rating-btn" data-rating="2">2</button>
-                            <button class="rating-btn" data-rating="3">3</button>
-                            <button class="rating-btn" data-rating="4">4</button>
-                            <button class="rating-btn" data-rating="5">5</button>
-                        </div>
-                    </div>
-                    <div class="evaluation-item" data-section="preparea">
-                        <p class="font-medium text-gray-700 mb-2">Tray/towers properly labeled with product identification, batch size, and dated stickers</p>
-                        <div class="rating-container">
-                            <span class="text-sm text-gray-600 mr-2">Rating:</span>
-                            <button class="rating-btn" data-rating="1">1</button>
-                            <button class="rating-btn" data-rating="2">2</button>
-                            <button class="rating-btn" data-rating="3">3</button>
-                            <button class="rating-btn" data-rating="4">4</button>
-                            <button class="rating-btn" data-rating="5">5</button>
-                        </div>
-                    </div>
-                    <div class="evaluation-item" data-section="preparea">
-                        <p class="font-medium text-gray-700 mb-2">Food Safety: Ingredients chilled to 40°F or lower before prep table pans placed in rail area</p>
-                        <div class="rating-container">
-                            <span class="text-sm text-gray-600 mr-2">Rating:</span>
-                            <button class="rating-btn" data-rating="1">1</button>
-                            <button class="rating-btn" data-rating="2">2</button>
-                            <button class="rating-btn" data-rating="3">3</button>
-                            <button class="rating-btn" data-rating="4">4</button>
-                            <button class="rating-btn" data-rating="5">5</button>
-                        </div>
-                    </div>
-                    <div class="evaluation-item" data-section="preparea">
-                        <p class="font-medium text-gray-700 mb-2">Rail area and all items for salad prep table are clean</p>
-                        <div class="rating-container">
-                            <span class="text-sm text-gray-600 mr-2">Rating:</span>
-                            <button class="rating-btn" data-rating="1">1</button>
-                            <button class="rating-btn" data-rating="2">2</button>
-                            <button class="rating-btn" data-rating="3">3</button>
-                            <button class="rating-btn" data-rating="4">4</button>
-                            <button class="rating-btn" data-rating="5">5</button>
-                        </div>
-                    </div>
-                    <div class="evaluation-item" data-section="preparea">
-                        <p class="font-medium text-gray-700 mb-2">Spacers and prep table pans in place in rail area at all times, even if empty</p>
-                        <div class="rating-container">
-                            <span class="text-sm text-gray-600 mr-2">Rating:</span>
-                            <button class="rating-btn" data-rating="1">1</button>
-                            <button class="rating-btn" data-rating="2">2</button>
-                            <button class="rating-btn" data-rating="3">3</button>
-                            <button class="rating-btn" data-rating="4">4</button>
-                            <button class="rating-btn" data-rating="5">5</button>
-                        </div>
-                    </div>
-                    <div class="evaluation-item" data-section="preparea">
-                        <p class="font-medium text-gray-700 mb-2">Following First In, First Out (FIFO) rotation system for ingredient selection</p>
-                        <div class="rating-container">
-                            <span class="text-sm text-gray-600 mr-2">Rating:</span>
-                            <button class="rating-btn" data-rating="1">1</button>
-                            <button class="rating-btn" data-rating="2">2</button>
-                            <button class="rating-btn" data-rating="3">3</button>
-                            <button class="rating-btn" data-rating="4">4</button>
-                            <button class="rating-btn" data-rating="5">5</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="mt-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Section Comments</label>
-                    <textarea id="prepareaComments" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Additional comments for this section..."></textarea>
-                </div>
-            </div>
-        </div>
-
-        <!-- Overall Comments and Action Plan -->
-        <div class="bg-white rounded-lg shadow-lg p-6 mt-6">
-            <h2 class="text-xl font-bold text-gray-800 mb-4">Overall Assessment</h2>
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Overall Comments</label>
-                    <textarea id="overallComments" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Overall performance comments..."></textarea>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Strengths</label>
-                    <textarea id="strengths" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Key strengths observed..."></textarea>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Areas for Improvement</label>
-                    <textarea id="improvements" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Areas that need improvement..."></textarea>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Action Plan</label>
-                    <textarea id="actionPlan" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Specific action items and goals..."></textarea>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Follow-up Date</label>
-                    <input type="date" id="followupDate" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
-                </div>
-            </div>
-        </div>
-
-        <!-- Signature Section -->
-        <div class="bg-white rounded-lg shadow-lg p-6 mt-6">
-            <h2 class="text-xl font-bold text-gray-800 mb-4">Signatures</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div>
-                    <h3 class="text-lg font-medium text-gray-700 mb-4">Team Member Acknowledgment</h3>
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Signature</label>
-                            <div class="signature-line w-full"></div>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Date</label>
-                            <input type="date" id="teamMemberSignatureDate" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <h3 class="text-lg font-medium text-gray-700 mb-4">Evaluator Confirmation</h3>
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Signature</label>
-                            <div class="signature-line w-full"></div>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Date</label>
-                            <input type="date" id="evaluatorSignatureDate" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="flex justify-center space-x-4 mt-8 no-print">
-            <button id="generatePDF" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200">
-                Generate PDF Report
-            </button>
-            <button id="resetForm" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200">
-                Reset Form
-            </button>
-        </div>
+      </div>
     </div>
 
-    <script>
-        // Global variables
-        let performanceChart;
-        const sectionScores = {
-            breading: 0,
-            primary: 0,
-            secondary: 0,
-            hashfries: 0,
-            preparea: 0
-        };
-
-        // Initialize the form
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeRatingButtons();
-            initializeChart();
-            setCurrentDate();
-        });
-
-        function setCurrentDate() {
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('evaluationDate').value = today;
-        }
-
-        function initializeRatingButtons() {
-            const ratingButtons = document.querySelectorAll('.rating-btn');
-            ratingButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const container = this.closest('.evaluation-item');
-                    const section = container.dataset.section;
-                    const rating = parseInt(this.dataset.rating);
-                    
-                    // Remove selected class from siblings
-                    container.querySelectorAll('.rating-btn').forEach(btn => {
-                        btn.classList.remove('selected');
-                    });
-                    
-                    // Add selected class to clicked button
-                    this.classList.add('selected');
-                    
-                    // Store the rating
-                    container.dataset.rating = rating;
-                    
-                    // Update section score
-                    updateSectionScore(section);
-                    updateOverallScore();
-                    updateChart();
-                });
-            });
-        }
-
-        function updateSectionScore(section) {
-            const items = document.querySelectorAll(`[data-section="${section}"]`);
-            let total = 0;
-            let count = 0;
-            
-            items.forEach(item => {
-                if (item.dataset.rating) {
-                    total += parseInt(item.dataset.rating);
-                    count++;
-                }
-            });
-            
-            const average = count > 0 ? (total / count) : 0;
-            sectionScores[section] = average;
-            
-            // Update display
-            const scoreElement = document.getElementById(`${section}Score`);
-            if (scoreElement) {
-                scoreElement.textContent = average.toFixed(1);
-            }
-        }
-
-        function updateOverallScore() {
-            const scores = Object.values(sectionScores);
-            const validScores = scores.filter(score => score > 0);
-            const overall = validScores.length > 0 ? 
-                validScores.reduce((a, b) => a + b, 0) / validScores.length : 0;
-            
-            document.getElementById('overallScore').textContent = overall.toFixed(1);
-        }
-
-        function initializeChart() {
-            const ctx = document.getElementById('performanceChart').getContext('2d');
-            performanceChart = new Chart(ctx, {
-                type: 'radar',
-                data: {
-                    labels: ['Breading/Machines', 'Primary', 'Secondary', 'Hash/Fries', 'Prep Area'],
-                    datasets: [{
-                        label: 'Performance Score',
-                        data: [0, 0, 0, 0, 0],
-                        backgroundColor: 'rgba(220, 38, 38, 0.2)',
-                        borderColor: 'rgba(220, 38, 38, 1)',
-                        borderWidth: 2,
-                        pointBackgroundColor: 'rgba(220, 38, 38, 1)',
-                        pointBorderColor: '#fff',
-                        pointHoverBackgroundColor: '#fff',
-                        pointHoverBorderColor: 'rgba(220, 38, 38, 1)'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    scales: {
-                        r: {
-                            beginAtZero: true,
-                            max: 5,
-                            ticks: {
-                                stepSize: 1
-                            }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    }
-                }
-            });
-        }
-
-        function updateChart() {
-            if (performanceChart) {
-                performanceChart.data.datasets[0].data = [
-                    sectionScores.breading,
-                    sectionScores.primary,
-                    sectionScores.secondary,
-                    sectionScores.hashfries,
-                    sectionScores.preparea
-                ];
-                performanceChart.update();
-            }
-        }
-
-        // PDF Generation
-        document.getElementById('generatePDF').addEventListener('click', async function() {
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF('p', 'mm', 'a4');
-            
-            // Page 1: Team Member Info and Performance Chart
-            await generatePage1(pdf);
-            
-            // Page 2: Overall Assessment and Section Scores
-            pdf.addPage();
-            await generatePage2(pdf);
-            
-            // Page 3: Comments, Action Plan, and Signatures
-            pdf.addPage();
-            await generatePage3(pdf);
-            
-            // Save the PDF
-            const teamMemberName = document.getElementById('teamMemberName').value || 'Team_Member';
-            const evaluationDate = document.getElementById('evaluationDate').value || new Date().toISOString().split('T')[0];
-            pdf.save(`BOH_Evaluation_${teamMemberName}_${evaluationDate}.pdf`);
-        });
-
-        async function generatePage1(pdf) {
-            // Add logos and header
-            pdf.setFontSize(20);
-            pdf.setTextColor(220, 38, 38);
-            pdf.text('Chick-fil-A', 20, 25);
-            pdf.setFontSize(14);
-            pdf.text('Back of House Team Member Evaluation', 20, 35);
-            
-            // Team member information
-            pdf.setFontSize(12);
-            pdf.setTextColor(0, 0, 0);
-            pdf.text('Team Member Information', 20, 50);
-            
-            const teamMemberName = document.getElementById('teamMemberName').value || 'N/A';
-            const position = document.getElementById('position').value || 'N/A';
-            const location = document.getElementById('location').value || 'N/A';
-            const hireDate = document.getElementById('hireDate').value || 'N/A';
-            const evaluationDate = document.getElementById('evaluationDate').value || 'N/A';
-            const evaluatorName = document.getElementById('evaluatorName').value || 'N/A';
-            
-            pdf.text(`Name: ${teamMemberName}`, 20, 60);
-            pdf.text(`Position: ${position}`, 20, 70);
-            pdf.text(`Location: ${location}`, 20, 80);
-            pdf.text(`Hire Date: ${hireDate}`, 20, 90);
-            pdf.text(`Evaluation Date: ${evaluationDate}`, 20, 100);
-            pdf.text(`Evaluator: ${evaluatorName}`, 20, 110);
-            
-            // Performance chart
-            const chartCanvas = document.getElementById('performanceChart');
-            const chartImage = await html2canvas(chartCanvas);
-            const chartDataURL = chartImage.toDataURL('image/png');
-            
-            pdf.addImage(chartDataURL, 'PNG', 20, 120, 160, 120);
-            
-            // Overall score
-            const overallScore = document.getElementById('overallScore').textContent;
-            pdf.setFontSize(16);
-            pdf.setTextColor(220, 38, 38);
-            pdf.text(`Overall Score: ${overallScore}/5.0`, 20, 260);
-        }
-
-        async function generatePage2(pdf) {
-            pdf.setFontSize(16);
-            pdf.setTextColor(220, 38, 38);
-            pdf.text('Overall Assessment & Section Scores', 20, 25);
-            
-            let yPosition = 40;
-            
-            // Overall score display
-            const overallScore = document.getElementById('overallScore').textContent;
-            pdf.setFontSize(14);
-            pdf.setTextColor(0, 0, 0);
-            pdf.text(`Overall Performance Score: ${overallScore}/5.0`, 20, yPosition);
-            yPosition += 20;
-            
-            // Section scores and comments
-            const sections = [
-                { key: 'breading', name: 'Breading/Machines', commentId: 'breadingComments' },
-                { key: 'primary', name: 'Primary', commentId: 'primaryComments' },
-                { key: 'secondary', name: 'Secondary', commentId: 'secondaryComments' },
-                { key: 'hashfries', name: 'Hash/Fries', commentId: 'hashfriesComments' },
-                { key: 'preparea', name: 'Prep Area', commentId: 'prepareaComments' }
-            ];
-            
-            sections.forEach(section => {
-                pdf.setFontSize(12);
-                pdf.setTextColor(220, 38, 38);
-                pdf.text(`${section.name}: ${sectionScores[section.key].toFixed(1)}/5.0`, 20, yPosition);
-                yPosition += 10;
-                
-                const comments = document.getElementById(section.commentId).value;
-                if (comments) {
-                    pdf.setTextColor(0, 0, 0);
-                    const splitComments = pdf.splitTextToSize(comments, 170);
-                    pdf.text(splitComments, 25, yPosition);
-                    yPosition += splitComments.length * 5 + 5;
-                } else {
-                    yPosition += 5;
-                }
-                
-                if (yPosition > 270) {
-                    pdf.addPage();
-                    yPosition = 20;
-                }
-            });
-        }
-
-        async function generatePage3(pdf) {
-            pdf.setFontSize(16);
-            pdf.setTextColor(220, 38, 38);
-            pdf.text('Comments & Action Plan', 20, 25);
-            
-            let yPosition = 40;
-            
-            // Overall comments
-            pdf.setFontSize(12);
-            pdf.setTextColor(0, 0, 0);
-            pdf.text('Overall Comments:', 20, yPosition);
-            yPosition += 10;
-            const overallComments = document.getElementById('overallComments').value;
-            if (overallComments) {
-                const splitOverall = pdf.splitTextToSize(overallComments, 170);
-                pdf.text(splitOverall, 20, yPosition);
-                yPosition += splitOverall.length * 5 + 10;
-            } else {
-                yPosition += 15;
-            }
-            
-            // Strengths
-            pdf.text('Strengths:', 20, yPosition);
-            yPosition += 10;
-            const strengths = document.getElementById('strengths').value;
-            if (strengths) {
-                const splitStrengths = pdf.splitTextToSize(strengths, 170);
-                pdf.text(splitStrengths, 20, yPosition);
-                yPosition += splitStrengths.length * 5 + 10;
-            } else {
-                yPosition += 15;
-            }
-            
-            // Areas for improvement
-            pdf.text('Areas for Improvement:', 20, yPosition);
-            yPosition += 10;
-            const improvements = document.getElementById('improvements').value;
-            if (improvements) {
-                const splitImprovements = pdf.splitTextToSize(improvements, 170);
-                pdf.text(splitImprovements, 20, yPosition);
-                yPosition += splitImprovements.length * 5 + 10;
-            } else {
-                yPosition += 15;
-            }
-            
-            // Action plan
-            pdf.text('Action Plan:', 20, yPosition);
-            yPosition += 10;
-            const actionPlan = document.getElementById('actionPlan').value;
-            if (actionPlan) {
-                const splitAction = pdf.splitTextToSize(actionPlan, 170);
-                pdf.text(splitAction, 20, yPosition);
-                yPosition += splitAction.length * 5 + 10;
-            } else {
-                yPosition += 15;
-            }
-            
-            // Follow-up date
-            const followupDate = document.getElementById('followupDate').value;
-            pdf.text(`Follow-up Date: ${followupDate || 'N/A'}`, 20, yPosition);
-            yPosition += 20;
-            
-            // Signature section
-            pdf.setFontSize(14);
-            pdf.setTextColor(220, 38, 38);
-            pdf.text('Signatures', 20, yPosition);
-            yPosition += 15;
-            
-            pdf.setFontSize(12);
-            pdf.setTextColor(0, 0, 0);
-            
-            // Team Member Acknowledgment
-            pdf.text('Team Member Acknowledgment:', 20, yPosition);
-            pdf.line(20, yPosition + 15, 100, yPosition + 15);
-            pdf.text('Signature', 20, yPosition + 20);
-            
-            const teamMemberSignatureDate = document.getElementById('teamMemberSignatureDate').value;
-            pdf.text(`Date: ${teamMemberSignatureDate || 'N/A'}`, 20, yPosition + 30);
-            
-            // Evaluator Confirmation
-            pdf.text('Evaluator Confirmation:', 110, yPosition);
-            pdf.line(110, yPosition + 15, 190, yPosition + 15);
-            pdf.text('Signature', 110, yPosition + 20);
-            
-            const evaluatorSignatureDate = document.getElementById('evaluatorSignatureDate').value;
-            pdf.text(`Date: ${evaluatorSignatureDate || 'N/A'}`, 110, yPosition + 30);
-        }
-
-        // Reset form
-        document.getElementById('resetForm').addEventListener('click', function() {
-            if (confirm('Are you sure you want to reset the entire form? This action cannot be undone.')) {
-                document.querySelectorAll('input, select, textarea').forEach(element => {
-                    if (element.type === 'date' && element.id === 'evaluationDate') {
-                        element.value = new Date().toISOString().split('T')[0];
-                    } else {
-                        element.value = '';
-                    }
-                });
-                
-                document.querySelectorAll('.rating-btn').forEach(btn => {
-                    btn.classList.remove('selected');
-                });
-                
-                document.querySelectorAll('.evaluation-item').forEach(item => {
-                    delete item.dataset.rating;
-                });
-                
-                // Reset scores
-                Object.keys(sectionScores).forEach(key => {
-                    sectionScores[key] = 0;
-                });
-                
-                document.querySelectorAll('.section-score').forEach(element => {
-                    element.textContent = '0.0';
-                });
-                
-                document.getElementById('overallScore').textContent = '0.0';
-                
-                updateChart();
-            }
-        });
-    </script>
-    <script>
-(function () {
-  const FONT_CLASS_MAP = {
-    dancing: 'font-dancing',
-    pacifico: 'font-pacifico',
-    greatvibes: 'font-greatvibes',
-    handlee: 'font-handlee'
-  };
-  const FONT_FAMILY_MAP = {
-    dancing: '"Dancing Script", cursive',
-    pacifico: '"Pacifico", cursive',
-    greatvibes: '"Great Vibes", cursive',
-    handlee: '"Handlee", cursive'
-  };
-
-  function log(...a){console.log('[Signature patch]',...a)}
-
-  function waitFor(selector, timeoutMs = 6000, intervalMs = 100) {
-    return new Promise((resolve, reject) => {
-      const start = performance.now();
-      const t = setInterval(() => {
-        const nodes = document.querySelectorAll(selector);
-        if (nodes.length) { clearInterval(t); resolve(nodes); }
-        else if (performance.now() - start > timeoutMs) {
-          clearInterval(t); reject(new Error(`Timeout waiting for ${selector}`));
-        }
-      }, intervalMs);
-    });
-  }
-
-  async function run() {
-    if (window.__sigPatchApplied) return;
-    window.__sigPatchApplied = true;
-
-    // 1) Fonts + minimal CSS
-    if (!document.getElementById('sig-fonts-link')) {
-      const link = document.createElement('link');
-      link.id = 'sig-fonts-link';
-      link.rel = 'stylesheet';
-      link.href = 'https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600&family=Great+Vibes&family=Pacifico&family=Handlee&display=swap';
-      document.head.appendChild(link);
-    }
-    if (!document.getElementById('sig-style')) {
-      const style = document.createElement('style');
-      style.id = 'sig-style';
-      style.textContent = `
-        .signature-preview{border-bottom:2px solid #000;min-height:48px;display:flex;align-items:center;padding:6px 8px;background:#fff}
-        .sig-ink{color:#111;font-size:28px;line-height:1;white-space:nowrap}
-        .font-dancing{font-family:"Dancing Script",cursive}
-        .font-pacifico{font-family:"Pacifico",cursive}
-        .font-handlee{font-family:"Handlee",cursive}
-        .font-greatvibes{font-family:"Great Vibes",cursive}
-      `;
-      document.head.appendChild(style);
-    }
-
-    // 2) Wait for existing lines
-    const lines = await waitFor('.signature-line').catch(() => []);
-    if (lines.length < 2) { alert('Expected 2 signature lines, found ' + lines.length); return; }
-
-    // 3) Build UI
-    function makeBlock(prefix) {
-      const wrap = document.createElement('div');
-      wrap.className = 'space-y-3';
-      wrap.innerHTML = `
-        <div class="grid grid-cols-1 gap-2">
-          <label class="block text-sm font-medium text-gray-700">Type Name</label>
-          <input id="${prefix}SignatureInput" type="text" placeholder="Type full name..."
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+    <!-- Team Member Information -->
+    <div class="bg-white rounded-lg shadow p-6 mb-6">
+      <h2 class="text-xl font-bold text-gray-800 mb-4">Team Member Information</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Team Member Name</label>
+          <input type="text" id="teamMemberName" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"/>
         </div>
-        <div class="grid grid-cols-1 gap-2">
-          <label class="block text-sm font-medium text-gray-700">Signature Font</label>
-          <select id="${prefix}SignatureFont"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
-            <option value="dancing">Dancing Script</option>
-            <option value="pacifico">Pacifico</option>
-            <option value="greatvibes">Great Vibes</option>
-            <option value="handlee">Handlee</option>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Position</label>
+          <select id="position" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+            <option value="">Select Position</option>
+            <option>Leader</option><option>Team Member</option><option>Prep</option>
           </select>
         </div>
-        <div id="${prefix}SignaturePreview" class="signature-preview">
-          <span id="${prefix}SignatureInk" class="sig-ink font-dancing"></span>
-        </div>`;
-      return wrap;
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Location</label>
+          <select id="location" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+            <option value="">Select Location</option>
+            <option>Ashley Crossing</option><option>Bees Ferry</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Hire Date</label>
+          <input type="date" id="hireDate" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"/>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Evaluation Date</label>
+          <input type="date" id="evaluationDate" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"/>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Evaluator Name</label>
+          <input type="text" id="evaluatorName" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"/>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Evaluation Type</label>
+          <select id="evaluationType" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+            <option>New Hire</option><option>Development</option><option>Raise</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Evaluation Stage</label>
+          <select id="evaluationStage" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+            <option>30 Day</option><option>45 Day</option><option>60 Day</option><option>Biannual</option><option>Annual</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Performance Chart -->
+    <div class="bg-white rounded-lg shadow p-6 mb-6">
+      <h2 class="text-xl font-bold text-gray-800 mb-4">Performance Overview</h2>
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+        <div class="w-full md:w-2/3">
+          <canvas id="performanceChart" width="400" height="400"></canvas>
+        </div>
+        <div class="md:w-1/3">
+          <div class="text-center">
+            <p class="text-lg font-medium text-gray-700">Overall Score</p>
+            <p id="overallScore" class="overall-score">0.0</p>
+            <p class="text-sm text-gray-500">out of 5.0</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Evaluation Sections -->
+    <div class="space-y-6">
+      <!-- Breading/Machines -->
+      <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-bold text-gray-800">Breading/Machines</h2>
+          <span id="breadingScore" class="section-score">0.0</span>
+        </div>
+        <div class="space-y-4">
+          <div class="evaluation-item" data-section="breading">
+            <p class="font-medium text-gray-700 mb-2">Uniform & raw-area PPE</p>
+            <div class="rating-container">
+              <span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button>
+              <button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button>
+              <button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button>
+              <button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+          <div class="evaluation-item" data-section="breading">
+            <p class="font-medium text-gray-700 mb-2">No cross-over while handling raw</p>
+            <div class="rating-container">
+              <span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button>
+              <button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button>
+              <button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button>
+              <button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+          <div class="evaluation-item" data-section="breading">
+            <p class="font-medium text-gray-700 mb-2">Loads grill properly</p>
+            <div class="rating-container">
+              <span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button>
+              <button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button>
+              <button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button>
+              <button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+        </div>
+        <div class="mt-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Section Comments</label>
+          <textarea id="breadingComments" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Additional comments for this section..."></textarea>
+        </div>
+      </div>
+
+      <!-- Primary -->
+      <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-bold text-gray-800">Primary</h2>
+          <span id="primaryScore" class="section-score">0.0</span>
+        </div>
+        <div class="space-y-4">
+          <div class="evaluation-item" data-section="primary">
+            <p class="font-medium text-gray-700 mb-2">Uniform & presentation</p>
+            <div class="rating-container">
+              <span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button>
+              <button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button>
+              <button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button>
+              <button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+          <div class="evaluation-item" data-section="primary">
+            <p class="font-medium text-gray-700 mb-2">Build standards</p>
+            <div class="rating-container">
+              <span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button>
+              <button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button>
+              <button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button>
+              <button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+          <div class="evaluation-item" data-section="primary">
+            <p class="font-medium text-gray-700 mb-2">Quick delivery of correct orders</p>
+            <div class="rating-container">
+              <span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button>
+              <button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button>
+              <button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button>
+              <button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+        </div>
+        <div class="mt-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Section Comments</label>
+          <textarea id="primaryComments" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Additional comments for this section..."></textarea>
+        </div>
+      </div>
+
+      <!-- Secondary -->
+      <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-bold text-gray-800">Secondary</h2>
+          <span id="secondaryScore" class="section-score">0.0</span>
+        </div>
+        <div class="space-y-4">
+          <div class="evaluation-item" data-section="secondary">
+            <p class="font-medium text-gray-700 mb-2">Uniform & station hygiene</p>
+            <div class="rating-container">
+              <span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button>
+              <button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button>
+              <button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button>
+              <button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+          <div class="evaluation-item" data-section="secondary">
+            <p class="font-medium text-gray-700 mb-2">Correct counts/packaging</p>
+            <div class="rating-container">
+              <span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button>
+              <button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button>
+              <button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button>
+              <button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+          <div class="evaluation-item" data-section="secondary">
+            <p class="font-medium text-gray-700 mb-2">Maintains clean station</p>
+            <div class="rating-container">
+              <span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button>
+              <button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button>
+              <button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button>
+              <button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+        </div>
+        <div class="mt-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Section Comments</label>
+          <textarea id="secondaryComments" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Additional comments for this section..."></textarea>
+        </div>
+      </div>
+
+      <!-- Hash/Fries -->
+      <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-bold text-gray-800">Hash/Fries</h2>
+          <span id="hashfriesScore" class="section-score">0.0</span>
+        </div>
+        <div class="space-y-4">
+          <div class="evaluation-item" data-section="hashfries">
+            <p class="font-medium text-gray-700 mb-2">Timers set and used properly</p>
+            <div class="rating-container">
+              <span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button>
+              <button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button>
+              <button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button>
+              <button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+          <div class="evaluation-item" data-section="hashfries">
+            <p class="font-medium text-gray-700 mb-2">Proper salting / fill levels</p>
+            <div class="rating-container">
+              <span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button>
+              <button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button>
+              <button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button>
+              <button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+        </div>
+        <div class="mt-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Section Comments</label>
+          <textarea id="hashfriesComments" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Additional comments for this section..."></textarea>
+        </div>
+      </div>
+
+      <!-- Prep Area -->
+      <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-bold text-gray-800">Prep Area</h2>
+          <span id="prepareaScore" class="section-score">0.0</span>
+        </div>
+        <div class="space-y-4">
+          <div class="evaluation-item" data-section="preparea">
+            <p class="font-medium text-gray-700 mb-2">Salad bases / ingredients knowledge</p>
+            <div class="rating-container">
+              <span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button>
+              <button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button>
+              <button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button>
+              <button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+          <div class="evaluation-item" data-section="preparea">
+            <p class="font-medium text-gray-700 mb-2">FIFO rotation & labeling</p>
+            <div class="rating-container">
+              <span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button>
+              <button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button>
+              <button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button>
+              <button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+        </div>
+        <div class="mt-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Section Comments</label>
+          <textarea id="prepareaComments" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Additional comments for this section..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Overall Comments and Action Plan -->
+    <div class="bg-white rounded-lg shadow p-6 mt-6">
+      <h2 class="text-xl font-bold text-gray-800 mb-4">Overall Assessment</h2>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Overall Comments</label>
+          <textarea id="overallComments" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Overall performance comments..."></textarea>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Strengths</label>
+          <textarea id="strengths" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Key strengths observed..."></textarea>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Areas for Improvement</label>
+          <textarea id="improvements" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Areas that need improvement..."></textarea>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Action Plan</label>
+          <textarea id="actionPlan" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Specific action items and goals..."></textarea>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Follow-up Date</label>
+          <input type="date" id="followupDate" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"/>
+        </div>
+      </div>
+    </div>
+
+    <!-- Signatures -->
+    <div class="bg-white rounded-lg shadow p-6 mt-6">
+      <h2 class="text-xl font-bold text-gray-800 mb-4">Signatures</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Team Member -->
+        <div>
+          <h3 class="text-lg font-medium text-gray-700 mb-4">Team Member Acknowledgment</h3>
+          <div class="space-y-3">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Type Name</label>
+              <input id="teamSigName" type="text" placeholder="Type full name..." class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"/>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Signature Font</label>
+              <select id="teamSigFont" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+                <option value="dancing">Dancing Script</option>
+                <option value="pacifico">Pacifico</option>
+                <option value="greatvibes">Great Vibes</option>
+                <option value="handlee">Handlee</option>
+              </select>
+            </div>
+            <div id="teamSigPreview" class="signature-preview">
+              <span id="teamSigInk" class="sig-ink font-dancing"></span>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Date</label>
+              <input type="date" id="teamMemberSignatureDate" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"/>
+            </div>
+          </div>
+        </div>
+
+        <!-- Evaluator -->
+        <div>
+          <h3 class="text-lg font-medium text-gray-700 mb-4">Evaluator Confirmation</h3>
+          <div class="space-y-3">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Type Name</label>
+              <input id="evalSigName" type="text" placeholder="Type full name..." class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"/>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Signature Font</label>
+              <select id="evalSigFont" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+                <option value="dancing">Dancing Script</option>
+                <option value="pacifico">Pacifico</option>
+                <option value="greatvibes">Great Vibes</option>
+                <option value="handlee">Handlee</option>
+              </select>
+            </div>
+            <div id="evalSigPreview" class="signature-preview">
+              <span id="evalSigInk" class="sig-ink font-dancing"></span>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Date</label>
+              <input type="date" id="evaluatorSignatureDate" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"/>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex flex-wrap justify-center gap-4 mt-8 no-print">
+      <button id="exportPDF" type="button"
+        class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200">
+        Export PDF
+      </button>
+      <button id="resetForm" type="button"
+        class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200">
+        Reset Form
+      </button>
+    </div>
+  </div>
+
+  <!-- Logic -->
+  <script>
+    // ===== State =====
+    let performanceChart;
+    const sectionScores = { breading:0, primary:0, secondary:0, hashfries:0, preparea:0 };
+
+    // ===== Init =====
+    document.addEventListener('DOMContentLoaded', () => {
+      setToday();
+      initSignatures();
+      initRatings();
+      initChart();
+      bindButtons();
+    });
+
+    function setToday(){
+      const el = document.getElementById('evaluationDate');
+      if (el) el.value = new Date().toISOString().split('T')[0];
     }
 
-    // Replace the two blank lines
-    const tmContainer = lines[0].parentElement; lines[0].remove(); tmContainer.prepend(makeBlock('teamMember'));
-    const evContainer = lines[1].parentElement; lines[1].remove(); evContainer.prepend(makeBlock('evaluator'));
+    // ===== Ratings + N/A =====
+    function initRatings(){
+      document.addEventListener('click', (e) => {
+        const numBtn = e.target.closest('.rating-btn');
+        const naBtn  = e.target.closest('.na-btn');
+        if (!numBtn && !naBtn) return;
 
-    // 4) Wire previews + style dropdown options
-    function applyFontClass(el, key) {
-      el.classList.remove(...Object.values(FONT_CLASS_MAP));
-      el.classList.add(FONT_CLASS_MAP[key] || 'font-dancing');
-    }
-    function styleSelectOptions(select) {
-      [...select.options].forEach(opt => {
-        const fam = FONT_FAMILY_MAP[opt.value];
-        if (fam) opt.style.fontFamily = fam;
-      });
-      const fam = FONT_FAMILY_MAP[select.value];
-      if (fam) select.style.fontFamily = fam;
-    }
-    function bind(prefix) {
-      const input = document.getElementById(`${prefix}SignatureInput`);
-      const font  = document.getElementById(`${prefix}SignatureFont`);
-      const ink   = document.getElementById(`${prefix}SignatureInk`);
-      if (!input || !font || !ink) return;
+        const item = (numBtn || naBtn).closest('.evaluation-item');
+        if (!item) return;
+        const section = item.dataset.section;
 
-      styleSelectOptions(font);
+        if (numBtn){
+          const wasSelected = numBtn.classList.contains('selected');
+          // clear visuals + flags
+          item.querySelectorAll('.rating-btn').forEach(b => b.classList.remove('selected'));
+          item.querySelectorAll('.na-btn').forEach(b => b.classList.remove('selected'));
+          delete item.dataset.na;
 
-      input.addEventListener('input', () => { ink.textContent = input.value.trim(); });
-      font.addEventListener('change', () => {
-        applyFontClass(ink, font.value);
-        styleSelectOptions(font);
-      });
-
-      ink.textContent = input.value.trim();
-      applyFontClass(ink, font.value);
-    }
-    bind('teamMember');
-    bind('evaluator');
-
-    // 5) Patch PDF Page 3 as before
-    if (typeof window.generatePage3 === 'function') {
-      window.generatePage3 = async function (pdf) {
-        const textBlock = (label, id, yRef) => {
-          pdf.setFontSize(12); pdf.setTextColor(0,0,0);
-          pdf.text(label, 20, yRef.y); yRef.y += 10;
-          const val = (document.getElementById(id)?.value || '').trim();
-          if (val) { const t = pdf.splitTextToSize(val, 170); pdf.text(t, 20, yRef.y); yRef.y += t.length*5 + 10; }
-          else { yRef.y += 15; }
-        };
-
-        pdf.setFontSize(16); pdf.setTextColor(220,38,38);
-        pdf.text('Comments & Action Plan', 20, 25);
-        const y = { y: 40 };
-        textBlock('Overall Comments:', 'overallComments', y);
-        textBlock('Strengths:', 'strengths', y);
-        textBlock('Areas for Improvement:', 'improvements', y);
-        textBlock('Action Plan:', 'actionPlan', y);
-
-        const follow = document.getElementById('followupDate')?.value || 'N/A';
-        pdf.text(`Follow-up Date: ${follow}`, 20, y.y); y.y += 20;
-
-        pdf.setFontSize(14); pdf.setTextColor(220,38,38);
-        pdf.text('Signatures', 20, y.y); y.y += 10;
-        pdf.setFontSize(12); pdf.setTextColor(0,0,0);
-
-        if (!window.html2canvas) {
-          pdf.text('(Signatures preview unavailable: html2canvas missing)', 20, y.y);
+          if (wasSelected){
+            delete item.dataset.rating; // clicking same number clears it
+          } else {
+            item.dataset.rating = String(parseInt(numBtn.dataset.rating, 10));
+            numBtn.classList.add('selected');
+          }
+          recomputeSection(section);
           return;
         }
 
-        const tmNode = document.getElementById('teamMemberSignaturePreview');
-        const evNode = document.getElementById('evaluatorSignaturePreview');
-        const tmCanvas = tmNode ? await html2canvas(tmNode, { backgroundColor:'#ffffff', scale:2 }) : null;
-        const evCanvas = evNode ? await html2canvas(evNode, { backgroundColor:'#ffffff', scale:2 }) : null;
+        if (naBtn){
+          const turningOn = !naBtn.classList.contains('selected');
+          item.querySelectorAll('.rating-btn').forEach(b => b.classList.remove('selected'));
+          delete item.dataset.rating;
 
-        pdf.text('Team Member Acknowledgment:', 20, y.y); y.y += 6;
-        if (tmCanvas) pdf.addImage(tmCanvas.toDataURL('image/png'), 'PNG', 20, y.y, 85, 20);
-        else pdf.text('(no signature)', 20, y.y + 12);
-        y.y += 24;
-        const tmDate = document.getElementById('teamMemberSignatureDate')?.value || 'N/A';
-        pdf.text(`Date: ${tmDate}`, 20, y.y);
-
-        const ry = y.y - 24;
-        pdf.text('Evaluator Confirmation:', 120, ry);
-        if (evCanvas) pdf.addImage(evCanvas.toDataURL('image/png'), 'PNG', 120, ry + 6, 85, 20);
-        else pdf.text('(no signature)', 120, ry + 12);
-        const evDate = document.getElementById('evaluatorSignatureDate')?.value || 'N/A';
-        pdf.text(`Date: ${evDate}`, 120, ry + 30);
-      };
-      log('PDF page 3 override ready.');
+          if (turningOn){
+            naBtn.classList.add('selected');
+            item.dataset.na = 'true';
+          } else {
+            naBtn.classList.remove('selected');
+            delete item.dataset.na;
+          }
+          recomputeSection(section);
+          return;
+        }
+      });
     }
 
-    log('Applied ✔️ Dropdown options show their real fonts.');
-  }
+    function recomputeSection(section){
+      const items = document.querySelectorAll(`[data-section="${section}"]`);
+      let total = 0, count = 0;
+      items.forEach(i => {
+        if (i.dataset.na === 'true') return;
+        const r = parseInt(i.dataset.rating || '', 10);
+        if (!isNaN(r)){ total += r; count++; }
+      });
+      const avg = count ? total / count : 0;
+      sectionScores[section] = avg;
 
-  if (document.readyState === 'complete' || document.readyState === 'interactive') run();
-  else document.addEventListener('DOMContentLoaded', run);
-})();
-</script>
-<script>
-(function () {
-  if (window.__evalMetaPatchApplied) return;
-  window.__evalMetaPatchApplied = true;
+      const el = document.getElementById(`${section}Score`);
+      if (el) el.textContent = avg.toFixed(1);
 
-  function byText(tag, text) {
-    const nodes = [...document.getElementsByTagName(tag)];
-    return nodes.find(n => (n.textContent || '').trim().toLowerCase() === text.toLowerCase());
-  }
-
-  function makeField(label, id, options) {
-    const wrap = document.createElement('div');
-    wrap.innerHTML = `
-      <label class="block text-sm font-medium text-gray-700 mb-1">${label}</label>
-      <select id="${id}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
-        ${options.map(o => `<option value="${o}">${o}</option>`).join('')}
-      </select>
-    `;
-    return wrap.firstElementChild.parentElement; // return the container div
-  }
-
-  function injectFields() {
-    // Find the "Team Member Information" grid
-    const h2 = byText('h2', 'Team Member Information');
-    if (!h2) return console.warn('[EvalMeta] Could not find Team Member Information header');
-    // The grid container is the next sibling with the grid classes
-    let grid = h2.parentElement.querySelector('.grid');
-    if (!grid) {
-      // fallback: search within this section
-      grid = h2.closest('.p-6')?.querySelector('.grid');
-    }
-    if (!grid) return console.warn('[EvalMeta] Could not find the TM info grid');
-
-    // Build our two new fields
-    const typeField = makeField('Evaluation Type', 'evaluationType', ['New Hire', 'Development', 'Raise']);
-    const stageField = makeField('Evaluation Stage', 'evaluationStage', ['30 Day', '45 Day', '60 Day', 'Biannual', 'Annual']);
-
-    // Insert them at the start of the grid (appear on top)
-    // Ensure they are wrapped like other grid children (divs)
-    const typeWrap = document.createElement('div');
-    typeWrap.appendChild(typeField);
-    const stageWrap = document.createElement('div');
-    stageWrap.appendChild(stageField);
-
-    grid.prepend(stageWrap);
-    grid.prepend(typeWrap);
-  }
-
-  function overridePDFPage1() {
-    if (typeof window.generatePage1 !== 'function') {
-      console.warn('[EvalMeta] generatePage1 not found; skipping PDF override');
-      return;
+      updateOverall();
+      updateChart();
     }
 
-    // Replace generatePage1 so we can include the new fields
-    window.generatePage1 = async function (pdf) {
-      const teamMemberName = document.getElementById('teamMemberName')?.value || 'N/A';
-      const position = document.getElementById('position')?.value || 'N/A';
-      const location = document.getElementById('location')?.value || 'N/A';
-      const hireDate = document.getElementById('hireDate')?.value || 'N/A';
-      const evaluationDate = document.getElementById('evaluationDate')?.value || 'N/A';
-      const evaluatorName = document.getElementById('evaluatorName')?.value || 'N/A';
+    function updateOverall(){
+      const vals = Object.values(sectionScores);
+      const used = vals.filter(v => v > 0);
+      const score = used.length ? (used.reduce((a,b)=>a+b,0)/used.length) : 0;
+      const el = document.getElementById('overallScore');
+      if (el) el.textContent = score.toFixed(1);
+    }
 
-      // NEW fields (may be missing if user didn’t inject UI for some reason)
-      const evaluationType = document.getElementById('evaluationType')?.value || 'N/A';
-      const evaluationStage = document.getElementById('evaluationStage')?.value || 'N/A';
+    // ===== Chart =====
+    function initChart(){
+      const ctx = document.getElementById('performanceChart').getContext('2d');
+      performanceChart = new Chart(ctx, {
+        type: 'radar',
+        data: {
+          labels: ['Breading/Machines','Primary','Secondary','Hash/Fries','Prep Area'],
+          datasets: [{
+            label: 'Performance Score',
+            data: [0,0,0,0,0],
+            backgroundColor: 'rgba(220,38,38,0.2)',
+            borderColor: 'rgba(220,38,38,1)',
+            borderWidth: 2,
+            pointBackgroundColor: 'rgba(220,38,38,1)'
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: { r: { beginAtZero:true, max:5, ticks:{stepSize:1} } },
+          plugins: { legend: { display:false } }
+        }
+      });
+    }
 
-      // Header
-      pdf.setFontSize(20);
-      pdf.setTextColor(220, 38, 38);
+    function updateChart(){
+      if (!performanceChart) return;
+      performanceChart.data.datasets[0].data = [
+        sectionScores.breading,
+        sectionScores.primary,
+        sectionScores.secondary,
+        sectionScores.hashfries,
+        sectionScores.preparea
+      ];
+      performanceChart.update();
+    }
+
+    // ===== Signatures =====
+    function initSignatures(){
+      const pairs = [
+        {input:'teamSigName', select:'teamSigFont', ink:'teamSigInk'},
+        {input:'evalSigName', select:'evalSigFont', ink:'evalSigInk'}
+      ];
+      const fontClass = (v)=>({
+        dancing:'font-dancing', pacifico:'font-pacifico', greatvibes:'font-greatvibes', handlee:'font-handlee'
+      }[v] || 'font-dancing');
+
+      pairs.forEach(({input,select,ink})=>{
+        const i = document.getElementById(input);
+        const s = document.getElementById(select);
+        const k = document.getElementById(ink);
+        if (!i || !s || !k) return;
+        const apply = ()=>{
+          k.textContent = (i.value || '').trim();
+          k.classList.remove('font-dancing','font-pacifico','font-greatvibes','font-handlee');
+          k.classList.add(fontClass(s.value));
+        };
+        i.addEventListener('input', apply);
+        s.addEventListener('change', apply);
+        apply();
+      });
+    }
+
+    // ===== PDF =====
+    async function buildPdf(){
+      const { jsPDF } = window.jspdf || {};
+      if (!jsPDF) throw new Error('jsPDF not loaded');
+      const pdf = new jsPDF('p','mm','a4');
+
+      await page1(pdf);
+      pdf.addPage();
+      await page2(pdf);
+      pdf.addPage();
+      await page3(pdf);
+
+      return pdf;
+    }
+
+    function safeFileName(){
+      const name = (document.getElementById('teamMemberName')?.value || 'Team_Member').trim().replace(/\s+/g,'_');
+      const date = document.getElementById('evaluationDate')?.value || new Date().toISOString().split('T')[0];
+      return `BOH_Evaluation_${name}_${date}.pdf`;
+    }
+
+    async function page1(pdf){
+      pdf.setFontSize(20); pdf.setTextColor(220,38,38);
       pdf.text('Chick-fil-A', 20, 25);
-      pdf.setFontSize(14);
-      pdf.text('Back of House Team Member Evaluation', 20, 35);
+      pdf.setFontSize(14); pdf.text('Back of House Team Member Evaluation', 20, 35);
 
-      // Team Member Information
-      pdf.setFontSize(12);
-      pdf.setTextColor(0, 0, 0);
+      pdf.setFontSize(12); pdf.setTextColor(0,0,0);
       pdf.text('Team Member Information', 20, 50);
 
-      // Print with the two new items first
+      const T = (id)=>document.getElementById(id)?.value || 'N/A';
+      const lines = [
+        ['Evaluation Type', T('evaluationType')],
+        ['Evaluation Stage', T('evaluationStage')],
+        ['Name', T('teamMemberName')],
+        ['Position', T('position') || 'N/A'],
+        ['Location', T('location') || 'N/A'],
+        ['Hire Date', T('hireDate')],
+        ['Evaluation Date', T('evaluationDate')],
+        ['Evaluator', T('evaluatorName')]
+      ];
       let y = 60;
-      pdf.text(`Evaluation Type: ${evaluationType}`, 20, y); y += 10;
-      pdf.text(`Evaluation Stage: ${evaluationStage}`, 20, y); y += 10;
+      lines.forEach(([l,v]) => { pdf.text(`${l}: ${v}`, 20, y); y += 8; });
 
-      pdf.text(`Name: ${teamMemberName}`, 20, y); y += 10;
-      pdf.text(`Position: ${position}`, 20, y); y += 10;
-      pdf.text(`Location: ${location}`, 20, y); y += 10;
-      pdf.text(`Hire Date: ${hireDate}`, 20, y); y += 10;
-      pdf.text(`Evaluation Date: ${evaluationDate}`, 20, y); y += 10;
-      pdf.text(`Evaluator: ${evaluatorName}`, 20, y); y += 10;
-
-      // Performance chart
-      const chartCanvas = document.getElementById('performanceChart');
-      if (chartCanvas && window.html2canvas) {
-        const chartImage = await html2canvas(chartCanvas);
-        const chartDataURL = chartImage.toDataURL('image/png');
-        // Place slightly lower to avoid overlapping text block
-        pdf.addImage(chartDataURL, 'PNG', 20, Math.max(140, y + 10), 160, 120);
+      // Use Chart.js built-in encoder (no CORS issues)
+      if (performanceChart) {
+        const img = performanceChart.toBase64Image();
+        pdf.addImage(img, 'PNG', 20, Math.max(140, y + 6), 160, 120);
       }
 
-      // Overall score
-      const overallScore = document.getElementById('overallScore')?.textContent || '0.0';
-      pdf.setFontSize(16);
-      pdf.setTextColor(220, 38, 38);
-      pdf.text(`Overall Score: ${overallScore}/5.0`, 20, 270);
-    };
-  }
-
-  // Run when DOM is ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      injectFields();
-      overridePDFPage1();
-    });
-  } else {
-    injectFields();
-    overridePDFPage1();
-  }
-})();
-</script>
-<script>
-(function () {
-  if (window.__naPatchApplied) return;
-  window.__naPatchApplied = true;
-
-  // 1) Minimal styles for the N/A button
-  const style = document.createElement('style');
-  style.textContent = `
-    .na-btn{
-      width: 2.5rem; height: 2.5rem;
-      border: 2px solid #9CA3AF; /* gray-400 */
-      background: white; color: #4B5563; /* gray-600 */
-      border-radius: 0.375rem; font-weight: bold; cursor: pointer;
-      transition: all 0.2s;
+      const overall = document.getElementById('overallScore')?.textContent || '0.0';
+      pdf.setFontSize(16); pdf.setTextColor(220,38,38);
+      pdf.text(`Overall Score: ${overall}/5.0`, 20, 270);
     }
-    .na-btn:hover { background: #F3F4F6; } /* gray-100 */
-    .na-btn.selected { background: #4B5563; color: white; } /* selected look */
-  `;
-  document.head.appendChild(style);
 
-  // Helper: recompute a section average using existing logic (ignores items with no data-rating)
-  function recomputeSection(sectionKey) {
-    const items = document.querySelectorAll(`[data-section="${sectionKey}"]`);
-    let total = 0, count = 0;
-    items.forEach(item => {
-      if (item.dataset.rating) {
-        total += parseInt(item.dataset.rating, 10);
-        count++;
+    async function page2(pdf){
+      pdf.setFontSize(16); pdf.setTextColor(220,38,38);
+      pdf.text('Overall Assessment & Section Scores', 20, 25);
+      pdf.setFontSize(12); pdf.setTextColor(0,0,0);
+
+      let y = 40;
+      const overall = document.getElementById('overallScore')?.textContent || '0.0';
+      pdf.text(`Overall Performance Score: ${overall}/5.0`, 20, y); y += 10;
+
+      const sections = [
+        { key:'breading',  name:'Breading/Machines', commentId:'breadingComments' },
+        { key:'primary',   name:'Primary',           commentId:'primaryComments' },
+        { key:'secondary', name:'Secondary',         commentId:'secondaryComments' },
+        { key:'hashfries', name:'Hash/Fries',        commentId:'hashfriesComments' },
+        { key:'preparea',  name:'Prep Area',         commentId:'prepareaComments' }
+      ];
+
+      for (const s of sections){
+        pdf.setTextColor(220,38,38);
+        pdf.text(`${s.name}: ${(sectionScores[s.key]||0).toFixed(1)}/5.0`, 20, y);
+        y += 8;
+
+        const txt = document.getElementById(s.commentId)?.value?.trim();
+        if (txt){
+          pdf.setTextColor(0,0,0);
+          const wrapped = pdf.splitTextToSize(txt, 170);
+          pdf.text(wrapped, 25, y);
+          y += wrapped.length * 5 + 6;
+        } else {
+          y += 4;
+        }
+
+        if (y > 270){ pdf.addPage(); y = 20; }
       }
-    });
-    const avg = count ? total / count : 0;
-    // write into global structure if it exists
-    if (window.sectionScores && sectionKey in window.sectionScores) {
-      window.sectionScores[sectionKey] = avg;
     }
-    const el = document.getElementById(`${sectionKey}Score`);
-    if (el) el.textContent = avg.toFixed(1);
-  }
 
-  // Helper: recompute overall using existing logic (averages non-zero sections)
-  function recomputeOverall() {
-    if (!window.sectionScores) return;
-    const scores = Object.values(window.sectionScores);
-    const valid = scores.filter(s => s > 0);
-    const overall = valid.length ? valid.reduce((a,b)=>a+b,0)/valid.length : 0;
-    const el = document.getElementById('overallScore');
-    if (el) el.textContent = overall.toFixed(1);
-    if (typeof window.updateChart === 'function') window.updateChart();
-  }
+    async function page3(pdf){
+      pdf.setFontSize(16); pdf.setTextColor(220,38,38);
+      pdf.text('Comments & Action Plan', 20, 25);
+      pdf.setFontSize(12); pdf.setTextColor(0,0,0);
+      let y = 40;
 
-  // 2) Append an N/A button to every .rating-container
-  document.querySelectorAll('.evaluation-item .rating-container').forEach(rc => {
-    // Skip if already added
-    if (rc.querySelector('.na-btn')) return;
+      const block = (label, id) => {
+        pdf.text(label, 20, y); y += 8;
+        const v = document.getElementById(id)?.value?.trim();
+        if (v){
+          const t = pdf.splitTextToSize(v, 170);
+          pdf.text(t, 20, y); y += t.length*5 + 6;
+        } else { y += 6; }
+      };
 
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'na-btn';
-    btn.textContent = 'N/A';
-    btn.title = 'Not Applicable (excluded from score)';
-    btn.dataset.na = 'true';
-    rc.appendChild(btn);
-  });
+      block('Overall Comments:', 'overallComments');
+      block('Strengths:', 'strengths');
+      block('Areas for Improvement:', 'improvements');
+      block('Action Plan:', 'actionPlan');
 
-  // 3) Wire up behavior
+      const follow = document.getElementById('followupDate')?.value || 'N/A';
+      pdf.text(`Follow-up Date: ${follow}`, 20, y); y += 14;
 
-  // When N/A is clicked:
-  document.addEventListener('click', function (e) {
-    const naBtn = e.target.closest('.na-btn');
-    if (!naBtn) return;
+      // Signatures (render previews to images)
+      pdf.setFontSize(14); pdf.setTextColor(220,38,38);
+      pdf.text('Signatures', 20, y); y += 8;
+      pdf.setFontSize(12); pdf.setTextColor(0,0,0);
 
-    const container = naBtn.closest('.evaluation-item');
-    if (!container) return;
-
-    // Clear numeric selection visuals
-    container.querySelectorAll('.rating-btn').forEach(b => b.classList.remove('selected'));
-    // Toggle N/A selected
-    container.querySelectorAll('.na-btn').forEach(b => b.classList.remove('selected'));
-    naBtn.classList.add('selected');
-
-    // Set dataset to NA (meaning: ignore in scoring)
-    delete container.dataset.rating;   // remove numeric rating
-    container.dataset.na = 'true';
-
-    // Recompute section + overall
-    const section = container.dataset.section;
-    if (section) {
-      recomputeSection(section);
-      recomputeOverall();
-    }
-  });
-
-  // When a numeric rating is clicked, also clear any NA flag
-  // We attach an extra listener in addition to the page's original one.
-  document.querySelectorAll('.rating-btn').forEach(btn => {
-    btn.addEventListener('click', function () {
-      const container = this.closest('.evaluation-item');
-      if (!container) return;
-
-      // Clear NA selection visuals + flag
-      container.querySelectorAll('.na-btn').forEach(b => b.classList.remove('selected'));
-      delete container.dataset.na;
-
-      // The page's original handler already sets dataset.rating and updates displays.
-      // We just ensure overall is recomputed (in case section avg changed from 0).
-      const section = container.dataset.section;
-      if (section) {
-        // If their code already calls updateSectionScore/updateOverallScore/updateChart we’re fine,
-        // but call our recompute as a safe no-op to keep numbers consistent.
-        recomputeSection(section);
-        recomputeOverall();
+      async function addSig(label, previewId, dateLabel, dateId, x){
+        pdf.text(label, x, y);
+        const node = document.getElementById(previewId);
+        if (node){
+          const canvas = await html2canvas(node, {backgroundColor:'#ffffff', scale:2});
+          pdf.addImage(canvas.toDataURL('image/png'), 'PNG', x, y+5, 80, 20);
+        } else {
+          pdf.text('(no signature)', x, y+18);
+        }
+        const d = document.getElementById(dateId)?.value || 'N/A';
+        pdf.text(`${dateLabel}: ${d}`, x, y+30);
       }
-    });
-  });
 
-  // 4) Extend the Reset button to clear N/A selections too
-  const resetBtn = document.getElementById('resetForm');
-  if (resetBtn) {
-    resetBtn.addEventListener('click', function () {
-      // Clear NA selected state and flags after the built-in reset runs
-      setTimeout(() => {
+      await addSig('Team Member Acknowledgment:', 'teamSigPreview', 'Date', 'teamMemberSignatureDate', 20);
+      await addSig('Evaluator Confirmation:', 'evalSigPreview', 'Date', 'evaluatorSignatureDate', 120);
+    }
+
+    // ===== Buttons =====
+    function bindButtons(){
+      document.getElementById('exportPDF').addEventListener('click', async () => {
+        try {
+          const pdf = await buildPdf();
+          pdf.save(safeFileName());
+        } catch (e) {
+          console.error(e);
+          alert('Could not export PDF: ' + (e?.message || e));
+        }
+      });
+
+      document.getElementById('resetForm').addEventListener('click', () => {
+        // Inputs/selects/areas
+        document.querySelectorAll('input, select, textarea').forEach(el => {
+          if (el.type === 'date' && el.id === 'evaluationDate') {
+            el.value = new Date().toISOString().split('T')[0];
+          } else {
+            el.value = '';
+          }
+        });
+        // Ratings & NA UI state
+        document.querySelectorAll('.rating-btn').forEach(b => b.classList.remove('selected'));
         document.querySelectorAll('.na-btn').forEach(b => b.classList.remove('selected'));
-        document.querySelectorAll('.evaluation-item').forEach(item => { delete item.dataset.na; });
-        // Recompute scores from scratch (their reset likely did this already)
-        if (window.sectionScores) {
-          Object.keys(window.sectionScores).forEach(k => recomputeSection(k));
-          recomputeOverall();
-        }
-      }, 0);
-    });
-  }
-})();
-</script>
-    <script>
-(function () {
-  if (window.__pdfDualActionsPatch) return;
-  window.__pdfDualActionsPatch = true;
-
-  // Create (or reuse) a function that builds the PDF once
-  async function buildPdf() {
-    const jspdfNS = window.jspdf || (window.jspdf?.jsPDF && { jsPDF: window.jspdf.jsPDF });
-    const { jsPDF } = jspdfNS || {};
-    if (!jsPDF) throw new Error('PDF library (jsPDF) not loaded');
-
-    const pdf = new jsPDF('p','mm','a4');
-
-    if (typeof window.generatePage1 === 'function') await window.generatePage1(pdf);
-    if (typeof window.generatePage2 === 'function') { pdf.addPage(); await window.generatePage2(pdf); }
-    if (typeof window.generatePage3 === 'function') { pdf.addPage(); await window.generatePage3(pdf); }
-
-    return pdf;
-  }
-
-  function makeFilename() {
-    const name = document.getElementById('teamMemberName')?.value?.trim() || 'Team_Member';
-    const date = document.getElementById('evaluationDate')?.value || new Date().toISOString().split('T')[0];
-    return `BOH_Evaluation_${name}_${date}.pdf`;
-  }
-
-  // Attach "Open in New Tab" behavior to existing Generate button
-  const genBtn = document.getElementById('generatePDF');
-  if (genBtn) {
-    const genClone = genBtn.cloneNode(true); // strip old listeners
-    genBtn.parentNode.replaceChild(genClone, genBtn);
-    genClone.addEventListener('click', async () => {
-      try {
-        const pdf = await buildPdf();
-        const blobUrl = pdf.output('bloburl'); // viewer with Download/Print controls
-        let w = window.open(blobUrl, '_blank', 'noopener');
-        if (!w) {
-          // Fallback if popup blocked
-          const a = document.createElement('a');
-          a.href = blobUrl; a.target = '_blank'; a.rel = 'noopener';
-          document.body.appendChild(a); a.click(); a.remove();
-        }
-      } catch (e) {
-        console.error('Open PDF failed:', e);
-        alert('Could not open PDF: ' + (e?.message || e));
-      }
-    });
-  }
-
-  // Add a "Download PDF" button next to it
-  const btnRow = document.querySelector('#generatePDF, #generatePDF + *')?.parentElement
-              || document.querySelector('.no-print') || document.body;
-  const dlBtn = document.createElement('button');
-  dlBtn.id = 'downloadPDF';
-  dlBtn.className = 'bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200';
-  dlBtn.textContent = 'Download PDF';
-  // place it next to Generate (fallback: append at end of row)
-  if (btnRow) {
-    btnRow.appendChild(dlBtn);
-  } else {
-    document.body.appendChild(dlBtn);
-  }
-
-  dlBtn.addEventListener('click', async () => {
-    try {
-      const pdf = await buildPdf();
-      // Direct save (same as your original behavior)
-      pdf.save(makeFilename());
-    } catch (e) {
-      console.error('Download PDF failed:', e);
-      alert('Could not download PDF: ' + (e?.message || e));
+        document.querySelectorAll('.evaluation-item').forEach(item => {
+          delete item.dataset.rating; delete item.dataset.na;
+        });
+        // Scores
+        Object.keys(sectionScores).forEach(k => sectionScores[k] = 0);
+        document.querySelectorAll('.section-score').forEach(el => el.textContent = '0.0');
+        document.getElementById('overallScore').textContent = '0.0';
+        updateChart();
+      });
     }
-  });
-})();
-</script>
+  </script>
 </body>
-<script>
-(function () {
-  if (window.__pathwayLinksAdded) return;
-  window.__pathwayLinksAdded = true;
-
-  const url = "https://www.pathway.cfahome.com/";
-  const linkHTML = `
-    <a href="${url}" target="_blank" class="text-red-600 hover:underline ml-2 text-sm font-medium">
-      Pathway Procedures
-    </a>
-  `;
-
-  // Look for each section heading (h2) in evaluation pages
-  document.querySelectorAll('h2').forEach(h2 => {
-    const txt = (h2.textContent || '').trim().toLowerCase();
-    if (
-      txt.includes('breading') ||
-      txt.includes('primary') ||
-      txt.includes('secondary') ||
-      txt.includes('hash') ||
-      txt.includes('prep') ||
-      txt.includes('evaluation')
-    ) {
-      if (!h2.querySelector('a[href*="pathway.cfahome.com"]')) {
-        h2.insertAdjacentHTML('beforeend', linkHTML);
-      }
-    }
-  });
-})();
-</script>
 </html>
