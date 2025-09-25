@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Chick-fil-A • BOH Team Member Evaluation</title>
+
+<!-- Tailwind (CDN) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+<!-- jsPDF + html2canvas (for PDF & signature previews) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<!-- Signature UI fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600&family=Pacifico&family=Great+Vibes&family=Handlee&display=swap" rel="stylesheet">
+
+<style>
+  .rating-container{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
+  .rating-btn,.na-btn{
+    width:2.5rem;height:2.5rem;border:2px solid #dc2626;background:#fff;color:#dc2626;
+    border-radius:.375rem;font-weight:700;cursor:pointer;transition:.2s;
+  }
+  .rating-btn:hover{background:#fef2f2}
+  .rating-btn.selected{background:#dc2626;color:#fff}
+  .na-btn{border-color:#9CA3AF;color:#4B5563}
+  .na-btn:hover{background:#F3F4F6}
+  .na-btn.selected{background:#4B5563;color:#fff}
+  .section-score{font-size:1.25rem;font-weight:700;color:#dc2626}
+  .overall-score{font-size:2rem;font-weight:800;color:#dc2626}
+  .signature-preview{border-bottom:2px solid #000;min-height:48px;display:flex;align-items:center;padding:6px 8px;background:#fff}
+  .sig-ink{color:#111;font-size:28px;line-height:1;white-space:nowrap}
+  .font-dancing{font-family:"Dancing Script",cursive}
+  .font-pacifico{font-family:"Pacifico",cursive}
+  .font-greatvibes{font-family:"Great Vibes",cursive}
+  .font-handlee{font-family:"Handlee",cursive}
+  @media print {.no-print{display:none !important}}
+</style>
+</head>
+
+<body class="bg-gray-50 min-h-screen">
+  <div class="container mx-auto px-4 py-8 max-w-5xl">
+    <!-- Header -->
+<div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+  <div class="flex items-center justify-between mb-4">
+    
+    <!-- Left side: CFA logo + Heading -->
+    <div class="flex items-center space-x-4">
+      <img src="logo.jpeg" alt="Chick-fil-A Logo" class="h-16 w-16 object-contain">
+      <div class="flex flex-col justify-center">
+        <h1 class="text-2xl font-bold text-red-600 leading-tight">Chick-fil-A</h1>
+        <p class="text-gray-600 text-sm">"Together, we pursue elite performance...</p>
+      </div>
+    </div>
+
+    <!-- Right side: Store Logos -->
+<div class="flex items-center space-x-12">
+  <img src="newashleycrossinglogo.png" alt="Ashley Crossing Logo" class="h-36 w-36 object-contain">
+  <img src="beesferryhoneycomb.png" alt="Bees Ferry Logo" class="h-32 w-32 object-contain">
+</div>
+
+  </div>
+</div>          <div>
+            <h1 class="text-2xl font-bold text-red-600">OPEX</h1>
+            <p class="text-gray-600">Back of House Team Member Evaluation</p>
+          </div>
+        </div>
+      </div>
+    </div>in 
+
+    <!-- Team Member Information -->
+    <div class="bg-white rounded-lg shadow p-6 mb-6">
+      <h2 class="text-xl font-bold text-gray-800 mb-4">Team Member Information</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Team Member Name</label>
+          <input id="teamMemberName" type="text" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Position</label>
+          <select id="position" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+            <option value="">Select Position</option>
+            <option>Leader</option><option>Team Member</option><option>Prep</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Location</label>
+          <select id="location" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+            <option value="">Select Location</option>
+            <option>Ashley Crossing</option><option>Bees Ferry</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Hire Date</label>
+          <input id="hireDate" type="date" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Evaluation Date</label>
+          <input id="evaluationDate" type="date" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Evaluator Name</label>
+          <input id="evaluatorName" type="text" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+        </div>
+
+        <!-- Extra fields we agreed on -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Evaluation Type</label>
+          <select id="evaluationType" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+            <option>New Hire</option><option>Development</option><option>Raise</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Evaluation Stage</label>
+          <select id="evaluationStage" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+            <option>30 Day</option><option>45 Day</option><option>60 Day</option>
+            <option>Biannual</option><option>Annual</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Performance Chart -->
+    <div class="bg-white rounded-lg shadow p-6 mb-6">
+      <h2 class="text-xl font-bold text-gray-800 mb-4">Performance Overview</h2>
+      <div class="flex flex-col md:flex-row items-center gap-6">
+        <div class="w-full md:w-1/2">
+          <canvas id="performanceChart" width="400" height="400"></canvas>
+        </div>
+        <div class="text-center">
+          <p class="text-lg font-medium text-gray-700">Overall Score</p>
+          <p id="overallScore" class="overall-score">0.0</p>
+          <p class="text-sm text-gray-500">out of 5.0</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================== EVALUATION SECTIONS (questions unchanged) ================== -->
+    <div class="space-y-6" id="sectionsRoot">
+      <!-- Helper for repeating rating row -->
+      <!-- BREADING/MACHINES -->
+      <section class="bg-white rounded-lg shadow p-6">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+            Breading/Machines
+            <a href="https://www.pathway.cfahome.com/" target="_blank" rel="noopener"
+               class="text-red-600 text-sm font-medium hover:underline">Pathway Procedures</a>
+          </h2>
+          <span id="breadingScore" class="section-score">0.0</span>
+        </div>
+        <div class="space-y-4">
+          <div class="evaluation-item" data-section="breading">
+            <p class="font-medium text-gray-700 mb-2">Uniform Equipment: Uniform, name-tag, neat and clean, gloves, hair net, and yellow apron/gloves while in raw area</p>
+            <div class="rating-container">
+              <span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button>
+              <button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button>
+              <button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button>
+              <button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+          <div class="evaluation-item" data-section="breading">
+            <p class="font-medium text-gray-700 mb-2">Following Food Safety: Team member does not cross over while handling raw, dressed in yellow</p>
+            <div class="rating-container">
+              <span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button>
+              <button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button>
+              <button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button>
+              <button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+          <div class="evaluation-item" data-section="breading">
+            <p class="font-medium text-gray-700 mb-2">Pathway Standards: Team member loads the grill properly</p>
+            <div class="rating-container">
+              <span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button>
+              <button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button>
+              <button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button>
+              <button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+          <div class="evaluation-item" data-section="breading">
+            <p class="font-medium text-gray-700 mb-2">Breader pulling from the right row? Are use first present and being used?</p>
+            <div class="rating-container">
+              <span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button>
+              <button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button>
+              <button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button>
+              <button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+        </div>
+        <div class="mt-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Section Comments</label>
+          <textarea id="breadingComments" rows="3" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Additional comments for this section..."></textarea>
+        </div>
+      </section>
+
+      <!-- PRIMARY -->
+      <section class="bg-white rounded-lg shadow p-6">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+            Primary
+            <a href="https://www.pathway.cfahome.com/" target="_blank" rel="noopener"
+               class="text-red-600 text-sm font-medium hover:underline">Pathway Procedures</a>
+          </h2>
+          <span id="primaryScore" class="section-score">0.0</span>
+        </div>
+        <div class="space-y-4">
+          <!-- (All questions exactly as provided) -->
+          <template id="primaryTpl"></template>
+          <div class="evaluation-item" data-section="primary">
+            <p class="font-medium text-gray-700 mb-2">Uniform Equipment: Uniform, name-tag, neat and clean, gloves, and hair net</p>
+            <div class="rating-container">
+              <span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button>
+              <button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button>
+              <button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button>
+              <button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+          <div class="evaluation-item" data-section="primary">
+            <p class="font-medium text-gray-700 mb-2">Pathway Standards: Building sandwich correctly (two pickles spread apart under the filet)</p>
+            <div class="rating-container">
+              <span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button>
+              <button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button>
+              <button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button>
+              <button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+          <div class="evaluation-item" data-section="primary">
+            <p class="font-medium text-gray-700 mb-2">Quick Delivery: Can build sandwich/special order correctly up to standards in timely manner</p>
+            <div class="rating-container">
+              <span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button>
+              <button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button>
+              <button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button>
+              <button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+          <div class="evaluation-item" data-section="primary">
+            <p class="font-medium text-gray-700 mb-2">Pathway Standards: Sandwiches in correct sleeve/box (deluxe in clam shell, others in sleeves)</p>
+            <div class="rating-container">
+              <span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button>
+              <button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button>
+              <button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button>
+              <button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+          <div class="evaluation-item" data-section="primary">
+            <p class="font-medium text-gray-700 mb-2">AHA is being followed and items are being scanned in and out</p>
+            <div class="rating-container">
+              <span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button>
+              <button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button>
+              <button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button>
+              <button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+          <div class="evaluation-item" data-section="primary">
+            <p class="font-medium text-gray-700 mb-2">Correct number of items in chutes, not over producing</p>
+            <div class="rating-container">
+              <span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button>
+              <button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button>
+              <button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button>
+              <button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+          <div class="evaluation-item" data-section="primary">
+            <p class="font-medium text-gray-700 mb-2">Filets used at right temp? Can temp products and know correct temp?</p>
+            <div class="rating-container">
+              <span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button>
+              <button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button>
+              <button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button>
+              <button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+          <div class="evaluation-item" data-section="primary">
+            <p class="font-medium text-gray-700 mb-2">Team member observed keeping a clean station</p>
+            <div class="rating-container">
+              <span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button>
+              <button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button>
+              <button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button>
+              <button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+        </div>
+        <div class="mt-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Section Comments</label>
+          <textarea id="primaryComments" rows="3" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Additional comments for this section..."></textarea>
+        </div>
+      </section>
+
+      <!-- SECONDARY -->
+      <section class="bg-white rounded-lg shadow p-6">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+            Secondary
+            <a href="https://www.pathway.cfahome.com/" target="_blank" rel="noopener"
+               class="text-red-600 text-sm font-medium hover:underline">Pathway Procedures</a>
+          </h2>
+          <span id="secondaryScore" class="section-score">0.0</span>
+        </div>
+        <div class="space-y-4">
+          <!-- all your Secondary questions -->
+          <div class="evaluation-item" data-section="secondary">
+            <p class="font-medium text-gray-700 mb-2">Uniform Equipment: Uniform, name-tag, neat and clean, gloves, and hair net</p>
+            <div class="rating-container">
+              <span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button><button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button><button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button><button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+          <div class="evaluation-item" data-section="secondary">
+            <p class="font-medium text-gray-700 mb-2">Quick Delivery: Can build sandwich/special order correctly up to standards in timely manner</p>
+            <div class="rating-container"><span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button><button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button><button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button><button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+          <div class="evaluation-item" data-section="secondary">
+            <p class="font-medium text-gray-700 mb-2">Pathway Standards: Correct number of nuggets/strips in boxes with right tab pushed in</p>
+            <div class="rating-container"><span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button><button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button><button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button><button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+          <div class="evaluation-item" data-section="secondary">
+            <p class="font-medium text-gray-700 mb-2">Pathway Standards: Grilled sandwich in wrapper inside shell</p>
+            <div class="rating-container"><span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button><button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button><button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button><button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+          <div class="evaluation-item" data-section="secondary">
+            <p class="font-medium text-gray-700 mb-2">Pathway Standards: Right serving size scooped for macs and soups filled to the line</p>
+            <div class="rating-container"><span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button><button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button><button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button><button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+          <div class="evaluation-item" data-section="secondary">
+            <p class="font-medium text-gray-700 mb-2">AHA is being followed and items are being scanned in and out</p>
+            <div class="rating-container"><span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button><button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button><button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button><button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+          <div class="evaluation-item" data-section="secondary">
+            <p class="font-medium text-gray-700 mb-2">Correct number of items in chutes, not over producing</p>
+            <div class="rating-container"><span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button><button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button><button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button><button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+          <div class="evaluation-item" data-section="secondary">
+            <p class="font-medium text-gray-700 mb-2">Can temp products correctly? Know the correct temps?</p>
+            <div class="rating-container"><span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button><button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button><button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button><button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+          <div class="evaluation-item" data-section="secondary">
+            <p class="font-medium text-gray-700 mb-2">Pathway Standards: Utensils being used clean? Cleaned every two hours?</p>
+            <div class="rating-container"><span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button><button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button><button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button><button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+          <div class="evaluation-item" data-section="secondary">
+            <p class="font-medium text-gray-700 mb-2">Team member observed keeping a clean station</p>
+            <div class="rating-container"><span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button><button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button><button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button><button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+        </div>
+        <div class="mt-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Section Comments</label>
+          <textarea id="secondaryComments" rows="3" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Additional comments for this section..."></textarea>
+        </div>
+      </section>
+
+      <!-- HASH/FRIES -->
+      <section class="bg-white rounded-lg shadow p-6">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+            Hash/Fries
+            <a href="https://www.pathway.cfahome.com/" target="_blank" rel="noopener"
+               class="text-red-600 text-sm font-medium hover:underline">Pathway Procedures</a>
+          </h2>
+          <span id="hashfriesScore" class="section-score">0.0</span>
+        </div>
+        <div class="space-y-4">
+          <div class="evaluation-item" data-section="hashfries">
+            <p class="font-medium text-gray-700 mb-2">Uniform Equipment: Uniform, name-tag, neat and clean, gloves, and hair net</p>
+            <div class="rating-container"><span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button><button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button><button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button><button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+          <div class="evaluation-item" data-section="hashfries">
+            <p class="font-medium text-gray-700 mb-2">Pathway Standards: Timer is set for fries or hash being dropped</p>
+            <div class="rating-container"><span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button><button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button><button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button><button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+          <div class="evaluation-item" data-section="hashfries">
+            <p class="font-medium text-gray-700 mb-2">Pathway Standards: Timer used to discard fries/hash that have timed out</p>
+            <div class="rating-container"><span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button><button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button><button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button><button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+          <div class="evaluation-item" data-section="hashfries">
+            <p class="font-medium text-gray-700 mb-2">Pathway Standards: Fries salted with correct number of clicks for the batch dropped</p>
+            <div class="rating-container"><span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button><button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button><button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button><button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+          <div class="evaluation-item" data-section="hashfries">
+            <p class="font-medium text-gray-700 mb-2">Pathway Standards: Correct number of hash in each box</p>
+            <div class="rating-container"><span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button><button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button><button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button><button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+          <div class="evaluation-item" data-section="hashfries">
+            <p class="font-medium text-gray-700 mb-2">Pathway Standards: Fries filled to the top of each container</p>
+            <div class="rating-container"><span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button><button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button><button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button><button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+        </div>
+        <div class="mt-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Section Comments</label>
+          <textarea id="hashfriesComments" rows="3" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Additional comments for this section..."></textarea>
+        </div>
+      </section>
+
+      <!-- PREP AREA -->
+      <section class="bg-white rounded-lg shadow p-6">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+            Prep Area
+            <a href="https://www.pathway.cfahome.com/" target="_blank" rel="noopener"
+               class="text-red-600 text-sm font-medium hover:underline">Pathway Procedures</a>
+          </h2>
+        <span id="prepareaScore" class="section-score">0.0</span>
+        </div>
+        <div class="space-y-4">
+          <div class="evaluation-item" data-section="preparea">
+            <p class="font-medium text-gray-700 mb-2">Can locate all bases for salads and identify what should be on them</p>
+            <div class="rating-container"><span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button><button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button><button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button><button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+          <div class="evaluation-item" data-section="preparea">
+            <p class="font-medium text-gray-700 mb-2">Can tell when a sticker is expired and not use expired products</p>
+            <div class="rating-container"><span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button><button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button><button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button><button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+          <div class="evaluation-item" data-section="preparea">
+            <p class="font-medium text-gray-700 mb-2">Tray/towers properly labeled with product identification, batch size, and dated stickers</p>
+            <div class="rating-container"><span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button><button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button><button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button><button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+          <div class="evaluation-item" data-section="preparea">
+            <p class="font-medium text-gray-700 mb-2">Food Safety: Ingredients chilled to 40°F or lower before prep table pans placed in rail area</p>
+            <div class="rating-container"><span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button><button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button><button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button><button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+          <div class="evaluation-item" data-section="preparea">
+            <p class="font-medium text-gray-700 mb-2">Rail area and all items for salad prep table are clean</p>
+            <div class="rating-container"><span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button><button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button><button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button><button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+          <div class="evaluation-item" data-section="preparea">
+            <p class="font-medium text-gray-700 mb-2">Spacers and prep table pans in place in rail area at all times, even if empty</p>
+            <div class="rating-container"><span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button><button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button><button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button><button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+          <div class="evaluation-item" data-section="preparea">
+            <p class="font-medium text-gray-700 mb-2">Following First In, First Out (FIFO) rotation system for ingredient selection</p>
+            <div class="rating-container"><span class="text-sm text-gray-600 mr-2">Rating:</span>
+              <button class="rating-btn" data-rating="1">1</button><button class="rating-btn" data-rating="2">2</button>
+              <button class="rating-btn" data-rating="3">3</button><button class="rating-btn" data-rating="4">4</button>
+              <button class="rating-btn" data-rating="5">5</button><button class="na-btn" type="button">N/A</button>
+            </div>
+          </div>
+        </div>
+        <div class="mt-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Section Comments</label>
+          <textarea id="prepareaComments" rows="3" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Additional comments for this section..."></textarea>
+        </div>
+      </section>
+    </div>
+
+    <!-- Overall Assessment -->
+    <div class="bg-white rounded-lg shadow p-6 mt-6">
+      <h2 class="text-xl font-bold text-gray-800 mb-4">Overall Assessment</h2>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Overall Comments</label>
+          <textarea id="overallComments" rows="4" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"></textarea>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Strengths</label>
+          <textarea id="strengths" rows="3" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"></textarea>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Areas for Improvement</label>
+          <textarea id="improvements" rows="3" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"></textarea>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Action Plan</label>
+          <textarea id="actionPlan" rows="3" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"></textarea>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Follow-up Date</label>
+          <input id="followupDate" type="date" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+        </div>
+      </div>
+    </div>
+
+    <!-- Signatures -->
+    <div class="bg-white rounded-lg shadow p-6 mt-6">
+      <h2 class="text-xl font-bold text-gray-800 mb-4">Signatures</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Team Member -->
+        <div>
+          <h3 class="text-lg font-medium text-gray-700 mb-4">Team Member Acknowledgment</h3>
+          <div class="space-y-3">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Type Name</label>
+              <input id="tmSigInput" type="text" placeholder="Type full name..." class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Signature Font</label>
+              <select id="tmSigFont" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+                <option value="dancing">Dancing Script</option>
+                <option value="pacifico">Pacifico</option>
+                <option value="greatvibes">Great Vibes</option>
+                <option value="handlee">Handlee</option>
+              </select>
+            </div>
+            <div id="tmSigPreview" class="signature-preview">
+              <span id="tmSigInk" class="sig-ink font-dancing"></span>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Date</label>
+              <input id="teamMemberSignatureDate" type="date" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+            </div>
+          </div>
+        </div>
+
+        <!-- Evaluator -->
+        <div>
+          <h3 class="text-lg font-medium text-gray-700 mb-4">Evaluator Confirmation</h3>
+          <div class="space-y-3">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Type Name</label>
+              <input id="evSigInput" type="text" placeholder="Type full name..." class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Signature Font</label>
+              <select id="evSigFont" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+                <option value="dancing">Dancing Script</option>
+                <option value="pacifico">Pacifico</option>
+                <option value="greatvibes">Great Vibes</option>
+                <option value="handlee">Handlee</option>
+              </select>
+            </div>
+            <div id="evSigPreview" class="signature-preview">
+              <span id="evSigInk" class="sig-ink font-dancing"></span>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Date</label>
+              <input id="evaluatorSignatureDate" type="date" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="flex justify-center gap-4 mt-8 no-print">
+      <button id="exportPDF" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg">
+        Export PDF
+      </button>
+      <button id="resetForm" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg">
+        Reset Form
+      </button>
+    </div>
+  </div>
+
+<script>
+/* ============== CONFIG ============== */
+// Replace this with your real base64 to show your PNG logo.
+const LOGO_SRC = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGP4BwQACfsD/Up0kYQAAAAASUVORK5CYII="; // 1x1 transparent
+
+/* ============== STATE ============== */
+let performanceChart;
+const sectionScores = { breading:0, primary:0, secondary:0, hashfries:0, preparea:0 };
+
+/* ============== INIT ============== */
+document.addEventListener('DOMContentLoaded', () => {
+  // Set logo
+  const logo = document.getElementById('brandLogo');
+  logo.src = LOGO_SRC;
+
+  // Default eval date to today
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('evaluationDate').value = today;
+
+  // Wire ratings (toggle, N/A, recompute)
+  wireRatings();
+
+  // Build chart
+  initChart();
+
+  // Signatures live preview
+  wireSignatures();
+
+  // Buttons
+  document.getElementById('exportPDF').addEventListener('click', exportPDF);
+  document.getElementById('resetForm').addEventListener('click', resetForm);
+});
+
+/* ============== RATINGS LOGIC ============== */
+function wireRatings(){
+  // Numeric buttons: toggle selection, clear siblings & NA
+  document.querySelectorAll('.rating-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      const item = e.currentTarget.closest('.evaluation-item');
+      const section = item.dataset.section;
+      const val = parseInt(e.currentTarget.dataset.rating,10);
+
+      // toggle if same button
+      const wasSelected = e.currentTarget.classList.contains('selected');
+
+      // clear all numeric selections
+      item.querySelectorAll('.rating-btn').forEach(b => b.classList.remove('selected'));
+      // clear NA
+      item.querySelectorAll('.na-btn').forEach(b => b.classList.remove('selected'));
+      delete item.dataset.na;
+
+      if (wasSelected){
+        delete item.dataset.rating; // clicking again clears
+      } else {
+        e.currentTarget.classList.add('selected');
+        item.dataset.rating = String(val);
+      }
+      updateSectionScore(section);
+    });
+  });
+
+  // N/A buttons: toggle N/A and clear numeric
+  document.querySelectorAll('.na-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      const item = e.currentTarget.closest('.evaluation-item');
+      const section = item.dataset.section;
+      const turningOn = !e.currentTarget.classList.contains('selected');
+
+      // clear numeric selection
+      item.querySelectorAll('.rating-btn').forEach(b => b.classList.remove('selected'));
+      delete item.dataset.rating;
+
+      // toggle NA
+      item.querySelectorAll('.na-btn').forEach(b => b.classList.remove('selected'));
+      if (turningOn){ e.currentTarget.classList.add('selected'); item.dataset.na = 'true'; }
+      else { delete item.dataset.na; }
+
+      updateSectionScore(section);
+    });
+  });
+}
+
+function updateSectionScore(section){
+  const items = document.querySelectorAll(`.evaluation-item[data-section="${section}"]`);
+  let total=0, count=0;
+  items.forEach(it => {
+    if (it.dataset.na === 'true') return;
+    const r = parseInt(it.dataset.rating||'',10);
+    if (!isNaN(r)){ total += r; count++; }
+  });
+  const avg = count ? total / count : 0;
+  sectionScores[section] = avg;
+  const out = document.getElementById(`${section}Score`);
+  if (out) out.textContent = avg.toFixed(1);
+
+  updateOverallScore();
+  updateChart();
+}
+
+function updateOverallScore(){
+  const vals = Object.values(sectionScores).filter(v => v>0);
+  const overall = vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : 0;
+  document.getElementById('overallScore').textContent = overall.toFixed(1);
+}
+
+/* ============== CHART ============== */
+function initChart(){
+  const ctx = document.getElementById('performanceChart').getContext('2d');
+  performanceChart = new Chart(ctx, {
+    type:'radar',
+    data:{
+      labels:['Breading/Machines','Primary','Secondary','Hash/Fries','Prep Area'],
+      datasets:[{
+        label:'Performance Score',
+        data:[0,0,0,0,0],
+        backgroundColor:'rgba(220,38,38,.18)',
+        borderColor:'rgba(220,38,38,1)',
+        borderWidth:2,
+        pointBackgroundColor:'rgba(220,38,38,1)'
+      }]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:true,
+      scales:{ r:{ beginAtZero:true, max:5, ticks:{ stepSize:1 } } },
+      plugins:{ legend:{ display:false } }
+    }
+  });
+}
+
+function updateChart(){
+  if (!performanceChart) return;
+  performanceChart.data.datasets[0].data = [
+    sectionScores.breading,
+    sectionScores.primary,
+    sectionScores.secondary,
+    sectionScores.hashfries,
+    sectionScores.preparea
+  ];
+  performanceChart.update();
+}
+
+/* ============== SIGNATURES ============== */
+function wireSignatures(){
+  const map = { dancing:'font-dancing', pacifico:'font-pacifico', greatvibes:'font-greatvibes', handlee:'font-handlee' };
+  function bind(inputId, selectId, inkId){
+    const input = document.getElementById(inputId);
+    const select = document.getElementById(selectId);
+    const ink = document.getElementById(inkId);
+    function apply(){
+      ink.textContent = (input.value||'').trim();
+      ink.className = `sig-ink ${map[select.value]||'font-dancing'}`;
+    }
+    input.addEventListener('input', apply);
+    select.addEventListener('change', apply);
+    apply();
+  }
+  bind('tmSigInput','tmSigFont','tmSigInk');
+  bind('evSigInput','evSigFont','evSigInk');
+}
+
+/* ============== RESET ============== */
+function resetForm(){
+  if (!confirm('Reset the entire form?')) return;
+
+  // Clear inputs
+  document.querySelectorAll('input, select, textarea').forEach(el => {
+    if (el.type === 'date' && el.id === 'evaluationDate'){
+      el.value = new Date().toISOString().split('T')[0];
+    } else if (el.tagName === 'SELECT'){
+      el.selectedIndex = 0;
+    } else {
+      el.value = '';
+    }
+  });
+
+  // Clear ratings
+  document.querySelectorAll('.rating-btn,.na-btn').forEach(b => b.classList.remove('selected'));
+  document.querySelectorAll('.evaluation-item').forEach(it => {
+    delete it.dataset.rating;
+    delete it.dataset.na;
+  });
+
+  // Reset scores
+  Object.keys(sectionScores).forEach(k => sectionScores[k]=0);
+  document.querySelectorAll('.section-score').forEach(s=>s.textContent='0.0');
+  document.getElementById('overallScore').textContent = '0.0';
+  updateChart();
+
+  // Reset signature previews
+  document.getElementById('tmSigInk').textContent='';
+  document.getElementById('evSigInk').textContent='';
+}
+
+/* ============== PDF EXPORT ============== */
+async function exportPDF(){
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF('p','mm','a4');
+
+  // Header + logo
+  if (LOGO_SRC){
+    try { pdf.addImage(LOGO_SRC, 'PNG', 15, 10, 18, 18); } catch(e){}
+  }
+  pdf.setTextColor(220,38,38);
+  pdf.setFontSize(18);
+  pdf.text('Chick-fil-A', 36, 18);
+  pdf.setFontSize(12);
+  pdf.text('Back of House Team Member Evaluation', 36, 25);
+
+  // Info block
+  pdf.setTextColor(0,0,0);
+  let y = 38;
+  const g = id => document.getElementById(id)?.value || 'N/A';
+  const line = t => { pdf.text(t, 15, y); y+=6; };
+  line(`Evaluation Type: ${g('evaluationType')}`);
+  line(`Evaluation Stage: ${g('evaluationStage')}`);
+  line(`Name: ${g('teamMemberName')}`);
+  line(`Position: ${g('position')}`);
+  line(`Location: ${g('location')}`);
+  line(`Hire Date: ${g('hireDate')}`);
+  line(`Evaluation Date: ${g('evaluationDate')}`);
+  line(`Evaluator: ${g('evaluatorName')}`);
+
+  // Chart (capture canvas directly)
+  const canvas = document.getElementById('performanceChart');
+  if (canvas){
+    const png = canvas.toDataURL('image/png', 1.0);
+    pdf.addImage(png, 'PNG', 15, 90, 180, 90);
+  }
+  pdf.setTextColor(220,38,38); pdf.setFontSize(14);
+  pdf.text(`Overall Score: ${document.getElementById('overallScore').textContent}/5.0`, 15, 190);
+
+  // Page 2: Section scores + comments
+  pdf.addPage(); pdf.setTextColor(220,38,38); pdf.setFontSize(16);
+  pdf.text('Overall Assessment & Section Scores', 15, 15);
+  y = 25; pdf.setFontSize(12); pdf.setTextColor(0,0,0);
+  const sections = [
+    {key:'breading', name:'Breading/Machines', c:'breadingComments'},
+    {key:'primary',  name:'Primary',            c:'primaryComments'},
+    {key:'secondary',name:'Secondary',          c:'secondaryComments'},
+    {key:'hashfries',name:'Hash/Fries',         c:'hashfriesComments'},
+    {key:'preparea', name:'Prep Area',          c:'prepareaComments'}
+  ];
+  for (const s of sections){
+    pdf.setTextColor(220,38,38);
+    pdf.text(`${s.name}: ${sectionScores[s.key].toFixed(1)}/5.0`, 15, y); y+=6;
+    const t = document.getElementById(s.c)?.value?.trim();
+    if (t){
+      pdf.setTextColor(0,0,0);
+      const wrapped = pdf.splitTextToSize(t, 180);
+      pdf.text(wrapped, 20, y);
+      y += wrapped.length*5 + 4;
+    } else { y += 2; }
+    if (y > 270){ pdf.addPage(); y = 20; }
+  }
+
+  // Page 3: Comments & Signatures
+  pdf.addPage();
+  pdf.setTextColor(220,38,38); pdf.setFontSize(16);
+  pdf.text('Comments & Action Plan', 15, 15);
+  y = 25; pdf.setFontSize(12); pdf.setTextColor(0,0,0);
+
+  const addBlock = (label, id) => {
+    pdf.text(label, 15, y); y+=6;
+    const v = document.getElementById(id)?.value?.trim();
+    if (v){ const lines = pdf.splitTextToSize(v, 180); pdf.text(lines, 15, y); y += lines.length*5 + 6; }
+    else { y += 6; }
+  };
+  addBlock('Overall Comments:', 'overallComments');
+  addBlock('Strengths:', 'strengths');
+  addBlock('Areas for Improvement:', 'improvements');
+  addBlock('Action Plan:', 'actionPlan');
+  pdf.text(`Follow-up Date: ${g('followupDate')}`, 15, y); y += 12;
+
+  pdf.setTextColor(220,38,38); pdf.setFontSize(14);
+  pdf.text('Signatures', 15, y); y += 6; pdf.setTextColor(0,0,0); pdf.setFontSize(12);
+
+  // Capture signature previews as images
+  const tmNode = document.getElementById('tmSigPreview');
+  const evNode = document.getElementById('evSigPreview');
+
+  if (tmNode){
+    const tmCan = await html2canvas(tmNode,{background:'#fff',scale:2});
+    pdf.text('Team Member Acknowledgment:', 15, y); y+=4;
+    pdf.addImage(tmCan.toDataURL('image/png'),'PNG',15,y,85,18); y+=22;
+    pdf.text(`Date: ${g('teamMemberSignatureDate')}`, 15, y); y+=10;
+  }
+
+  if (evNode){
+    const evCan = await html2canvas(evNode,{background:'#fff',scale:2});
+    pdf.text('Evaluator Confirmation:', 115, y-32);
+    pdf.addImage(evCan.toDataURL('image/png'),'PNG',115,y-28,85,18);
+    pdf.text(`Date: ${g('evaluatorSignatureDate')}`, 115, y);
+  }
+
+  // Save
+  const name = (g('teamMemberName') || 'Team_Member').replace(/[^\w\- ]+/g,'').replace(/\s+/g,'_');
+  const date = g('evaluationDate') || new Date().toISOString().split('T')[0];
+  pdf.save(`BOH_Evaluation_${name}_${date}.pdf`);
+}
+</script>
+</body>
+</html>
